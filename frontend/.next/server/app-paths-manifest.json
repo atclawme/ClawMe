@@ -1,7 +1,0 @@
-{
-  "/api/waitlist/count/route": "app/api/waitlist/count/route.js",
-  "/api/handle/me/route": "app/api/handle/me/route.js",
-  "/api/handle/route": "app/api/handle/route.js",
-  "/page": "app/page.js",
-  "/login/page": "app/login/page.js"
-}
