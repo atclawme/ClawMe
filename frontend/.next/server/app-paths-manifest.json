@@ -1,6 +1,6 @@
 {
-  "/api/handle/me/route": "app/api/handle/me/route.js",
   "/api/resolve/[handle]/route": "app/api/resolve/[handle]/route.js",
+  "/api/connections/request/route": "app/api/connections/request/route.js",
   "/login/page": "app/login/page.js",
   "/dashboard/page": "app/dashboard/page.js",
   "/dashboard/settings/page": "app/dashboard/settings/page.js",
