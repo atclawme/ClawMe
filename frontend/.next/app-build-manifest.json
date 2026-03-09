@@ -9,6 +9,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/waitlist/route.js"
+    ],
+    "/api/waitlist/check/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/waitlist/check/route.js"
     ]
   }
 }
