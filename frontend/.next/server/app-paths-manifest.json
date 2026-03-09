@@ -3,5 +3,7 @@
   "/api/handle/route": "app/api/handle/route.js",
   "/api/heartbeat/route": "app/api/heartbeat/route.js",
   "/api/resolve/[handle]/route": "app/api/resolve/[handle]/route.js",
-  "/login/page": "app/login/page.js"
+  "/api/connections/pending/route": "app/api/connections/pending/route.js",
+  "/login/page": "app/login/page.js",
+  "/dashboard/page": "app/dashboard/page.js"
 }
