@@ -76,7 +76,7 @@ The backend will automatically detect that `SUPABASE_URL` is no longer a placeho
 
 ```bash
 # Check the API is responding
-curl https://agentic-web-1.preview.emergentagent.com/api/waitlist/check?handle=testuser
+curl https://clawme-registry.preview.emergentagent.com/api/waitlist/check?handle=testuser
 
 # Should return: {"available": true}
 ```
