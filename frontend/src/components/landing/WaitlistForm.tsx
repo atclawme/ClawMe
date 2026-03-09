@@ -142,10 +142,14 @@ export default function WaitlistForm() {
             className="text-[36px] font-bold text-[#F0F0F5] mb-4"
             style={{ letterSpacing: '-0.01em' }}
           >
-            Reserve your @handle now.
+            Reserve your{' '}
+            <span style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace', color: '#6C47FF' }}>
+              @handle
+            </span>{' '}
+            now.
           </h2>
           <p className="text-[16px] text-[#8E8EA0] leading-[1.7]">
-            We&apos;re onboarding the first wave of ClawMe users. Reserve your handle today — it&apos;s
+            We&apos;re onboarding the first wave of ClawMe users. Reserve your handle today, and it&apos;s
             yours when we launch.
           </p>
         </div>
@@ -217,7 +221,7 @@ export default function WaitlistForm() {
                       backgroundColor: '#1C1C28',
                       border: `1px solid ${borderColor() || '#3F3F50'}`,
                       transitionDuration: '150ms',
-                      fontFamily: 'var(--font-inter), Inter, sans-serif',
+                      fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace',
                     }}
                     onFocus={(e) => {
                       if (!borderColor()) {

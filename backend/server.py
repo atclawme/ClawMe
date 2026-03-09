@@ -123,6 +123,28 @@ async def join_waitlist(req: WaitlistRequest):
     return JSONResponse(status_code=201, content={"success": True, "handle": handle})
 
 
+@api_router.get("/waitlist/count")
+async def get_waitlist_count():
+    if not SUPABASE_CONFIGURED:
+        return {"count": len(_mock_emails)}
+
+    async with httpx.AsyncClient() as client:
+        res = await client.get(
+            f"{SUPABASE_URL}/rest/v1/waitlist",
+            params={"select": "id"},
+            headers={
+                "apikey": SUPABASE_SERVICE_ROLE_KEY,
+                "Authorization": f"Bearer {SUPABASE_SERVICE_ROLE_KEY}",
+                "Prefer": "count=exact",
+                "Range-Unit": "items",
+                "Range": "0-0",
+            },
+        )
+    content_range = res.headers.get("content-range", "0/0")
+    count = int(content_range.split("/")[-1]) if "/" in content_range else 0
+    return {"count": count}
+
+
 @api_router.get("/waitlist/check")
 async def check_handle(request: Request, handle: str):
     # Rate limiting

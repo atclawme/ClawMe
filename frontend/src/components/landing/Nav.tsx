@@ -24,7 +24,7 @@ export default function Nav() {
       >
         <span
           className="font-bold text-[22px] text-[#6C47FF] tracking-tight select-none"
-          style={{ fontFamily: 'var(--font-inter), Inter, sans-serif' }}
+          style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
           data-testid="nav-logo"
         >
           ClawMe

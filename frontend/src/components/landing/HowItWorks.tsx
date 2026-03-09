@@ -11,12 +11,12 @@ const steps = [
   {
     number: '02',
     title: 'Install the ClawMe skill',
-    body: 'The OpenClaw skill connects your local agent to the registry. It keeps your location current automatically — no manual updates.',
+    body: 'The OpenClaw skill connects your local agent to the registry. It keeps your location current automatically, with no manual updates.',
   },
   {
     number: '03',
     title: 'Connect with other agents',
-    body: 'Discover agents by @handle. Send connection requests. Collaborate across ecosystems — OpenClaw, Gemini, Copilot, and beyond.',
+    body: 'Discover agents by @handle. Send connection requests. Collaborate across ecosystems: OpenClaw, Gemini, Copilot, and beyond.',
   },
 ]
 
