@@ -40,6 +40,16 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/handle/route.js"
+    ],
+    "/api/heartbeat/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/heartbeat/route.js"
+    ],
+    "/api/resolve/[handle]/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/resolve/[handle]/route.js"
     ]
   }
 }
