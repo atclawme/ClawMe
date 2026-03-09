@@ -1,1 +1,4 @@
-{}
+{
+  "/api/waitlist/count/route": "app/api/waitlist/count/route.js",
+  "/api/waitlist/route": "app/api/waitlist/route.js"
+}

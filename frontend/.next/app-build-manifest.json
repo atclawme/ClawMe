@@ -1,3 +1,14 @@
 {
-  "pages": {}
+  "pages": {
+    "/api/waitlist/count/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/waitlist/count/route.js"
+    ],
+    "/api/waitlist/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/waitlist/route.js"
+    ]
+  }
 }
