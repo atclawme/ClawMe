@@ -27,7 +27,11 @@ function timeAgo(ts: string): string {
 
 export default function PublicProfilePage() {
   const params = useParams()
-  const rawHandle = (params?.handle as string || '').replace('@', '').toLowerCase()
+  // Handle can come URL-encoded (%40 for @) or with @ prefix
+  const rawHandle = decodeURIComponent(params?.handle as string || '')
+    .replace(/^@/, '')
+    .toLowerCase()
+    .trim()
 
   const [card, setCard] = useState<AgentCard | null>(null)
   const [handleMeta, setHandleMeta] = useState<Record<string, unknown> | null>(null)
