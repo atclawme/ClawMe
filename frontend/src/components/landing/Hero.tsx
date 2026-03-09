@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 
 const fadeUp = {
@@ -13,8 +13,17 @@ const fadeUp = {
 }
 
 export default function Hero() {
+  const [count, setCount] = useState<number | null>(null)
+
   const scrollToWaitlist = useCallback(() => {
     document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/waitlist/count')
+      .then((r) => r.json())
+      .then((d) => setCount(d.count))
+      .catch(() => {})
   }, [])
 
   return (
@@ -79,7 +88,7 @@ export default function Hero() {
           data-testid="hero-subheadline"
         >
           ClawMe gives your personal agent a persistent, human-readable identity
-          — so other agents can find you, connect with you, and collaborate.
+          so other agents can find you, connect with you, and collaborate.
           Built on Google&apos;s A2A protocol.
         </motion.p>
 
@@ -103,6 +112,19 @@ export default function Hero() {
             Reserve your @handle
           </motion.button>
           <span className="text-[13px] text-[#52525B]">Free to join. No credit card.</span>
+          {count !== null && count > 0 && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.3 }}
+              className="text-[13px] text-[#8E8EA0]"
+              data-testid="waitlist-count"
+            >
+              Join{' '}
+              <span className="text-[#F0F0F5] font-semibold">{count.toLocaleString()}+</span>{' '}
+              agents already waiting
+            </motion.span>
+          )}
         </motion.div>
       </div>
     </section>

@@ -49,16 +49,19 @@ Build Phase 1 of ClawMe: a landing page with waitlist capture for a persistent i
 
 ---
 
-## What's Been Implemented (Phase 1 — completed 2026-03-09)
+## What's Been Implemented (Phase 1 — completed 2026-03-09, updated 2026-03-09)
 
 ### Frontend
 - [x] Next.js 15 App Router with TypeScript
-- [x] Sticky nav (60px, backdrop-blur, semi-transparent)
+- [x] Sticky nav (60px, backdrop-blur, semi-transparent) — ClawMe logo in JetBrains Mono
 - [x] Full-viewport hero with subtle animated radial gradient
 - [x] Framer Motion staggered fade-up animations on page load
+- [x] Live waitlist count in hero: "Join X+ agents already waiting" (hidden when count = 0)
 - [x] How It Works — 3 cards with whileInView scroll animations
 - [x] Waitlist form with:
-  - Non-editable `@` prefix in handle input
+  - Non-editable `@` prefix in handle input (JetBrains Mono)
+  - Handle input text in JetBrains Mono
+  - `@handle` in section heading styled in JetBrains Mono purple
   - 300ms debounced availability check (GET /api/waitlist/check)
   - Real-time color feedback (green=available, red=taken/invalid)
   - Dynamic submit button label ("Reserve @{handle}" / "Reserve my handle")
@@ -67,10 +70,12 @@ Build Phase 1 of ClawMe: a landing page with waitlist capture for a persistent i
   - Toast notification for generic errors
 - [x] Fully responsive from 375px
 - [x] No white flash on load (bg #0A0A0F hardcoded in html/body)
+- [x] No em dashes in any copy
 
 ### Backend
 - [x] POST /api/waitlist — validates email + handle, inserts to Supabase/mock
 - [x] GET /api/waitlist/check — validates handle, checks availability
+- [x] GET /api/waitlist/count — returns total waitlist count (for social proof)
 - [x] Handle validation: `^[a-z0-9_]{2,24}$` regex
 - [x] Reserved handles rejected: admin, api, resolve, verify, support, clawme, help, root, www
 - [x] 409 responses: `{ error: "already_registered" }` and `{ error: "handle_taken" }`
