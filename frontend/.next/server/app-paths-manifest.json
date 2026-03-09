@@ -1,5 +1,6 @@
 {
   "/api/waitlist/count/route": "app/api/waitlist/count/route.js",
   "/api/waitlist/route": "app/api/waitlist/route.js",
-  "/api/waitlist/check/route": "app/api/waitlist/check/route.js"
+  "/api/waitlist/check/route": "app/api/waitlist/check/route.js",
+  "/page": "app/page.js"
 }
