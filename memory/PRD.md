@@ -1,22 +1,21 @@
 # ClawMe — Product Requirements Document
 
 ## Original Problem Statement
-Build Phase 1 of ClawMe: a landing page with waitlist capture for a persistent identity registry for personal AI agents built on Google's A2A protocol.
+Build ClawMe: a persistent identity and discovery registry for personal AI agents built on Google's A2A protocol.
 
 ---
 
 ## Architecture
 
 ### Stack
-- **Frontend:** Next.js 15 (App Router, TypeScript), Framer Motion, Tailwind CSS
-- **Backend:** FastAPI (Python), running on port 8001
-- **Database:** Supabase (Postgres) — waitlist table — PLACEHOLDER, not yet configured
-- **Deployment:** Kubernetes (preview.emergentagent.com)
+- **Frontend/Backend:** Next.js 15 (App Router, TypeScript)
+- **Database:** Supabase (Postgres) — using in-memory mock when credentials not configured
+- **Authentication:** Supabase Auth with GitHub OAuth
+- **UI:** shadcn/ui, Tailwind CSS, Framer Motion
 
 ### Routing
-- Port 3000: Next.js frontend
-- Port 8001: FastAPI backend (all `/api/*` routes via Kubernetes ingress)
-- Frontend makes relative `/api/` calls which are routed to FastAPI
+- Port 3000: Next.js frontend + API routes
+- All `/api/*` routes handled by Next.js API Routes
 
 ### Key Files
 ```
@@ -24,112 +23,173 @@ Build Phase 1 of ClawMe: a landing page with waitlist capture for a persistent i
   app/
     layout.tsx         — Root layout, Inter + JetBrains Mono fonts
     page.tsx           — Landing page (composes all sections)
-    globals.css        — Dark theme CSS vars, hero gradient animation
-  components/landing/
-    Nav.tsx            — Sticky nav, ClawMe wordmark, Join Waitlist CTA
-    Hero.tsx           — Full-viewport hero, animated gradient, Framer Motion
-    HowItWorks.tsx     — 3-step explainer cards with scroll animations
-    WaitlistForm.tsx   — Handle + email form, availability check, success state
-    Footer.tsx         — Simple footer with GitHub link
+    login/page.tsx     — GitHub OAuth sign-in page
+    claim/page.tsx     — Handle claiming flow
+    dashboard/page.tsx — User dashboard with cards
+    dashboard/settings/page.tsx — Full settings page
+    [handle]/page.tsx  — Public profile page
+    auth/callback/route.ts — OAuth callback handler
+    api/
+      waitlist/        — Waitlist CRUD
+      handle/          — Handle management
+      heartbeat/       — Agent heartbeat
+      resolve/         — A2A card resolver
+      connections/     — Connection requests
+  components/
+    landing/           — Nav, Hero, HowItWorks, WaitlistForm, Footer
+    auth/              — GitHubSignInButton
+    dashboard/         — Sidebar, HandleCard, AgentStatusCard, etc.
+    profile/           — RequestConnectionModal
   lib/
-    validations.ts     — HANDLE_REGEX, RESERVED_HANDLES, validateHandle()
-
-/app/backend/
-  server.py            — FastAPI with POST /api/waitlist, GET /api/waitlist/check
+    supabase.ts        — Client-side Supabase helper with mock mode
+    supabase-server.ts — Server-side Supabase helpers
+    auth.ts            — Auth utilities with mock user support
+    mock-store.ts      — In-memory store for development
+    validations.ts     — Handle/email validation
+    resolver.ts        — A2A card builder with tiered access
 ```
 
 ---
 
-## Design System (tokens applied)
+## Design System
 - **bg:** #0A0A0F | **surface:** #13131A | **surface-raised:** #1C1C28
 - **accent:** #6C47FF | **accent-hover:** #7C5CFF
 - **text-primary:** #F0F0F5 | **text-secondary:** #8E8EA0 | **text-muted:** #52525B
-- **success:** #22C55E | **error:** #EF4444
+- **success:** #22C55E | **error:** #EF4444 | **warning:** #F59E0B
 - **Fonts:** Inter (body), JetBrains Mono (handle display)
 
 ---
 
-## What's Been Implemented (Phase 1 — completed 2026-03-09, updated 2026-03-09)
+## What's Been Implemented
 
-### Frontend
-- [x] Next.js 15 App Router with TypeScript
-- [x] Sticky nav (60px, backdrop-blur, semi-transparent) — ClawMe logo in JetBrains Mono
-- [x] Full-viewport hero with subtle animated radial gradient
-- [x] Framer Motion staggered fade-up animations on page load
-- [x] Live waitlist count in hero: "Join X+ agents already waiting" (hidden when count = 0)
-- [x] How It Works — 3 cards with whileInView scroll animations
-- [x] Waitlist form with:
-  - Non-editable `@` prefix in handle input (JetBrains Mono)
-  - Handle input text in JetBrains Mono
-  - `@handle` in section heading styled in JetBrains Mono purple
-  - 300ms debounced availability check (GET /api/waitlist/check)
-  - Real-time color feedback (green=available, red=taken/invalid)
-  - Dynamic submit button label ("Reserve @{handle}" / "Reserve my handle")
-  - Inline error messages for email and handle
-  - Success state animation (replaces form)
-  - Toast notification for generic errors
-- [x] Fully responsive from 375px
-- [x] No white flash on load (bg #0A0A0F hardcoded in html/body)
-- [x] No em dashes in any copy
+### Phase 1 — Landing & Waitlist (Completed 2026-03-09)
+- [x] Sticky nav with ClawMe wordmark
+- [x] Full-viewport hero with animated gradient
+- [x] "How It Works" 3-step explainer
+- [x] Waitlist form with handle availability check
+- [x] Live waitlist counter ("Join X+ agents already waiting")
+- [x] POST /api/waitlist, GET /api/waitlist/check, GET /api/waitlist/count
 
-### Backend
-- [x] POST /api/waitlist — validates email + handle, inserts to Supabase/mock
-- [x] GET /api/waitlist/check — validates handle, checks availability
-- [x] GET /api/waitlist/count — returns total waitlist count (for social proof)
-- [x] Handle validation: `^[a-z0-9_]{2,24}$` regex
-- [x] Reserved handles rejected: admin, api, resolve, verify, support, clawme, help, root, www
-- [x] 409 responses: `{ error: "already_registered" }` and `{ error: "handle_taken" }`
-- [x] In-memory rate limiter (10 req/60s per IP) on check endpoint
-- [x] In-memory mock store when Supabase not configured
+### Phase 2 — Auth, Handle, Dashboard (Completed 2026-03-09)
+- [x] GitHub OAuth sign-in page (/login)
+- [x] OAuth callback handler (/auth/callback)
+- [x] Handle claim flow (/claim) with availability validation
+- [x] User dashboard (/dashboard) with:
+  - Handle card with verified badge
+  - Agent status card (gateway URL, last heartbeat, online/offline)
+  - Connections card (approved count, pending requests)
+  - Visibility tier card
+- [x] Settings page (/dashboard/settings) with:
+  - Display name and description
+  - Supported methods selection
+  - Gateway URL and public key
+  - Visibility tier selection (1/2/3)
+  - Auto-approve verified users option
+  - Danger zone (delete handle)
+- [x] Public profile pages (/@handle) with:
+  - Handle display with verification badge
+  - Last seen indicator
+  - Request Connection modal
+- [x] API Routes:
+  - POST/PUT /api/handle — claim and update
+  - GET /api/handle/me — current user handle
+  - POST /api/heartbeat — agent heartbeat
+  - GET /api/resolve/[handle] — A2A card with tiered access
+  - POST /api/connections/request — send connection request
+  - GET /api/connections/pending — list pending requests
+  - PATCH /api/connections/[id] — approve/reject connection
 
 ---
 
-## Supabase Setup Required
+## Database Schema
 
-Add to `/app/backend/.env`:
-```
-SUPABASE_URL=<your_supabase_project_url>
-SUPABASE_ANON_KEY=<your_supabase_anon_key>
-SUPABASE_SERVICE_ROLE_KEY=<your_service_role_key>
-```
+### waitlist
+| Column | Type | Description |
+|--------|------|-------------|
+| id | uuid | Primary key |
+| email | text | Unique, not null |
+| desired_handle | text | Optional |
+| source | text | e.g., "landing_page" |
+| created_at | timestamptz | Auto-generated |
 
-SQL to run in Supabase:
-```sql
-create table waitlist (
-  id uuid primary key default gen_random_uuid(),
-  email text unique not null,
-  desired_handle text,
-  source text,
-  created_at timestamptz default now()
-);
-alter table waitlist enable row level security;
-create policy "allow_anon_insert" on waitlist
-  for insert to anon with check (true);
-```
+### handles
+| Column | Type | Description |
+|--------|------|-------------|
+| id | uuid | Primary key |
+| handle | text | Unique, 2-24 chars |
+| owner_id | uuid | FK to auth.users |
+| display_name | text | Optional |
+| description | text | Max 280 chars |
+| target_gateway | text | https:// or wss:// URL |
+| public_key | text | Ed25519 multibase |
+| supported_methods | text[] | e.g., ['GET_AVAILABILITY'] |
+| visibility_tier | int | 1, 2, or 3 |
+| auto_approve_rules | jsonb | e.g., {verified_only: true} |
+| trust_score | int | Default 0 |
+| last_heartbeat | timestamptz | Updated by heartbeat API |
+| created_at | timestamptz | Auto-generated |
+
+### connections
+| Column | Type | Description |
+|--------|------|-------------|
+| id | uuid | Primary key |
+| requester_handle_id | uuid | FK to handles |
+| target_handle_id | uuid | FK to handles |
+| status | text | pending/approved/rejected/blocked |
+| requester_message | text | Optional message |
+| created_at | timestamptz | Auto-generated |
+| resolved_at | timestamptz | When status changed |
+
+---
+
+## Credentials Required
+
+### Supabase (see /app/supabase_activation.md)
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_ANON_KEY
+- SUPABASE_SERVICE_ROLE_KEY
+
+### GitHub OAuth (see /app/github_activation.md)
+- GITHUB_CLIENT_ID
+- GITHUB_CLIENT_SECRET
 
 ---
 
 ## Prioritized Backlog
 
-### P0 — Phase 1 Remaining
-- [ ] Add real Supabase credentials (currently using in-memory mock)
+### P0 — Immediate
+- [ ] User to add real Supabase credentials
+- [ ] User to add GitHub OAuth credentials
+- [ ] Test full auth flow with real credentials
 
-### P1 — Phase 2 Core
-- [ ] GitHub OAuth via Supabase Auth
-- [ ] Handles table (full registration beyond waitlist)
-- [ ] Resolver API (`/resolve/@handle/agent.json`)
-- [ ] Heartbeat endpoint
-- [ ] Handle uniqueness enforced in DB (unique constraint on desired_handle)
+### P1 — Phase 3 (OpenClaw Skill)
+- [ ] Python skill package for agent integration
+- [ ] Automatic heartbeat registration
+- [ ] Connection request tools
+- [ ] Skill installation guide
 
-### P2 — Phase 2 Extended
-- [ ] Connection request system
-- [ ] Dashboard for authenticated users
-- [ ] OpenClaw skill integration
-- [ ] Admin view for waitlist management
+### P2 — Phase 4 (Enhanced Features)
+- [ ] LinkedIn OAuth integration
+- [ ] Trust score calculation
+- [ ] Advanced rate limiting (Redis)
+- [ ] Admin moderation tools
+- [ ] Handle deletion API
+
+### P3 — Phase 5 (Infrastructure)
+- [ ] Cloudflare Tunnel automation
+- [ ] Production deployment guide
+- [ ] API documentation
 
 ---
 
-## Test Results (Phase 1)
-- Backend: 100% (13/13 tests)
-- Frontend: 100% (all flows verified)
-- Tested: form submission, validation, availability check, duplicate detection, rate limiting, success state, mobile layout
+## Test Results (Phase 2)
+- Backend: 100% (24/24 tests passed)
+- Frontend: 100% (all pages verified)
+- Coverage: Waitlist, Handle CRUD, Heartbeat, Resolve, Connections
+
+---
+
+## Known Limitations
+- **MOCKED:** Supabase and GitHub OAuth use placeholder credentials
+- In-memory store resets on server restart (expected for dev mode)
+- Rate limiting is in-memory (single instance only)
