@@ -153,6 +153,7 @@ class TestWaitlistFormAPI:
     def test_create_waitlist_entry(self):
         """Should be able to create a waitlist entry with handle reservation"""
         import uuid
+        import time
         unique_email = f"test_{uuid.uuid4().hex[:8]}@example.com"
         unique_handle = f"testhandle{uuid.uuid4().hex[:6]}"
         
@@ -167,15 +168,34 @@ class TestWaitlistFormAPI:
         assert data.get("success") == True
         assert data.get("handle") == unique_handle
         
+        # Wait a bit to avoid rate limiting
+        time.sleep(0.5)
+        
         # Verify the handle is now reserved
         check_response = requests.get(f"{BASE_URL}/api/waitlist/check?handle={unique_handle}")
         check_data = check_response.json()
+        
+        # Handle rate limiting - retry once if needed
+        if check_data.get("error") == "Too many requests":
+            time.sleep(2)
+            check_response = requests.get(f"{BASE_URL}/api/waitlist/check?handle={unique_handle}")
+            check_data = check_response.json()
+        
         assert check_data.get("available") == False
         assert check_data.get("reason") == "waitlist_reserved"
+        
+        time.sleep(0.5)
         
         # Verify same email can see it as reserved_for_you
         check_response2 = requests.get(f"{BASE_URL}/api/waitlist/check?handle={unique_handle}&email={unique_email}")
         check_data2 = check_response2.json()
+        
+        # Handle rate limiting - retry once if needed
+        if check_data2.get("error") == "Too many requests":
+            time.sleep(2)
+            check_response2 = requests.get(f"{BASE_URL}/api/waitlist/check?handle={unique_handle}&email={unique_email}")
+            check_data2 = check_response2.json()
+        
         assert check_data2.get("available") == True
         assert check_data2.get("reserved_for_you") == True
     
