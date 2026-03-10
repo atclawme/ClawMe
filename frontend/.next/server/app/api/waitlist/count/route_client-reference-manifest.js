@@ -1,0 +1,1 @@
+globalThis.__RSC_MANIFEST=(globalThis.__RSC_MANIFEST||{});globalThis.__RSC_MANIFEST["/api/waitlist/count/route"]={"moduleLoading":{"prefix":"/_next/"},"ssrModuleMapping":{},"edgeSSRModuleMapping":{},"clientModules":{},"entryCSSFiles":{"/app/frontend/src/":[],"/app/frontend/src/app/api/waitlist/count/route":[]},"rscModuleMapping":{},"edgeRscModuleMapping":{}}
