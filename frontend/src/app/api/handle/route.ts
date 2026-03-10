@@ -4,7 +4,17 @@ import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-serve
 import { store } from '@/lib/mock-store'
 import { HANDLE_REGEX, RESERVED_HANDLES } from '@/lib/validations'
 
-// POST — initial claim
+/**
+ * POST /api/handle — Claim a handle
+ * 
+ * Validates:
+ * 1. Handle format is valid
+ * 2. Handle is not system-reserved
+ * 3. User doesn't already have a handle
+ * 4. Handle is not already claimed (active)
+ * 5. Handle is not reserved on waitlist by a DIFFERENT email
+ *    - If reserved by same email, allow the claim
+ */
 export async function POST(request: NextRequest) {
   const auth = await requireAuth(request)
   if ('error' in auth) return auth.error
@@ -24,10 +34,29 @@ export async function POST(request: NextRequest) {
   const existing = await getUserHandle(user.id)
   if (existing) return NextResponse.json({ error: 'Handle already claimed' }, { status: 409 })
 
+  const userEmail = user.email?.toLowerCase()
+
   if (!SUPABASE_CONFIGURED) {
+    // Mock mode
+    
+    // Check if handle is already claimed (active)
     if (store.handlesBySlug.has(handle)) {
       return NextResponse.json({ error: 'handle_taken' }, { status: 409 })
     }
+    
+    // Check if handle is reserved on waitlist by someone else
+    const waitlistId = store.waitlistByHandle.get(handle)
+    if (waitlistId) {
+      const reservation = store.waitlist.get(waitlistId)
+      if (reservation && reservation.email !== userEmail) {
+        return NextResponse.json({ 
+          error: 'handle_reserved', 
+          message: 'This handle is reserved by another user on the waitlist' 
+        }, { status: 409 })
+      }
+    }
+    
+    // Create the handle
     const id = crypto.randomUUID()
     const newHandle = {
       id,
@@ -43,11 +72,35 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newHandle, { status: 201 })
   }
 
+  // Production mode with Supabase
   const supabase = createServiceSupabase()
-  // Check handle uniqueness
-  const { data: taken } = await supabase.from('handles').select('id').eq('handle', handle).maybeSingle()
-  if (taken) return NextResponse.json({ error: 'handle_taken' }, { status: 409 })
+  
+  // Check if handle is already claimed
+  const { data: taken } = await supabase
+    .from('handles')
+    .select('id')
+    .eq('handle', handle)
+    .maybeSingle()
+  
+  if (taken) {
+    return NextResponse.json({ error: 'handle_taken' }, { status: 409 })
+  }
 
+  // Check if handle is reserved on waitlist by someone else
+  const { data: reservation } = await supabase
+    .from('waitlist')
+    .select('id, email')
+    .eq('desired_handle', handle)
+    .maybeSingle()
+  
+  if (reservation && reservation.email !== userEmail) {
+    return NextResponse.json({ 
+      error: 'handle_reserved', 
+      message: 'This handle is reserved by another user on the waitlist' 
+    }, { status: 409 })
+  }
+
+  // Create the handle
   const { data, error } = await supabase
     .from('handles')
     .insert({ handle, owner_id: user.id, visibility_tier: 1, trust_score: 0 })
@@ -58,7 +111,9 @@ export async function POST(request: NextRequest) {
   return NextResponse.json(data, { status: 201 })
 }
 
-// PUT — update handle fields
+/**
+ * PUT /api/handle — Update handle settings
+ */
 export async function PUT(request: NextRequest) {
   const auth = await requireAuth(request)
   if ('error' in auth) return auth.error
