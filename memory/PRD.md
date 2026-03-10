@@ -21,57 +21,54 @@ Build ClawMe: a persistent identity and discovery registry for personal AI agent
 ```
 /app/frontend/src/
   app/
-    layout.tsx         — Root layout, Inter + JetBrains Mono fonts
-    page.tsx           — Landing page (composes all sections)
+    layout.tsx         — Root layout
+    page.tsx           — Landing page
     login/page.tsx     — GitHub OAuth / Dev Mode sign-in
     claim/page.tsx     — Handle claiming flow
-    dashboard/page.tsx — User dashboard with cards
-    dashboard/settings/page.tsx — Full settings page
+    dashboard/         — User dashboard
     [handle]/page.tsx  — Public profile page
-    auth/callback/route.ts — OAuth callback handler
+    auth/callback/     — OAuth callback with auto-linking
     api/
-      waitlist/        — Waitlist CRUD
-      handle/          — Handle management
+      waitlist/        — Waitlist CRUD + availability check
+      handle/          — Handle management with waitlist protection
       heartbeat/       — Agent heartbeat
       resolve/         — A2A card resolver
       connections/     — Connection requests
-  components/
-    landing/           — Nav, Hero, HowItWorks, WaitlistForm, Footer
-    auth/              — GitHubSignInButton
-    dashboard/         — Sidebar, HandleCard, AgentStatusCard, etc.
-    profile/           — RequestConnectionModal
   lib/
-    supabase.ts        — Client-side Supabase helper with mock mode
+    supabase.ts        — Client-side Supabase helper
     supabase-server.ts — Server-side Supabase helpers
-    auth.ts            — Auth utilities with mock user support
+    auth.ts            — Auth utilities
     mock-store.ts      — In-memory store for development
     validations.ts     — Handle/email validation
-    resolver.ts        — A2A card builder with tiered access
+    resolver.ts        — A2A card builder
 ```
 
 ---
 
-## Mock Mode
+## User Flows (GitHub Enforced)
 
-The application runs in **mock mode** when Supabase credentials are not configured (contain "placeholder" or are missing):
+### Flow 1: Waitlist → GitHub Sign-In (Reservation Flow)
+1. User provides desired handle + email on landing page waitlist
+2. Handle is reserved for them in the `waitlist` table
+3. Later, user clicks "Sign in with GitHub"
+4. Auth callback checks if GitHub email matches waitlist entry
+5. **If match:** Auto-claim the reserved handle → redirect to `/dashboard?welcome=true`
+6. **If no match:** Redirect to `/claim` for manual selection
 
-| Feature | Mock Mode | Production Mode |
-|---------|-----------|-----------------|
-| Authentication | "Continue in Dev Mode" button | GitHub OAuth via Supabase |
-| Database | In-memory store (resets on restart) | Supabase PostgreSQL |
-| User Identity | `mock-user-dev` / `dev@mock.local` | Real GitHub user |
-| Session | localStorage (`clawme_mock_session`) | Supabase session cookies |
+### Flow 2: Direct GitHub Sign-In (New User Flow)
+1. User skips waitlist and clicks "Sign in with GitHub"
+2. Auth callback checks waitlist for their email
+3. **If on waitlist with reserved handle:** Auto-claim → dashboard
+4. **If not on waitlist:** Redirect to `/claim` to search for available handle
 
-**To enable production mode:** Update `frontend/.env` with real Supabase credentials (see `supabase_activation.md` and `github_activation.md`).
-
----
-
-## Design System
-- **bg:** #0A0A0F | **surface:** #13131A | **surface-raised:** #1C1C28
-- **accent:** #6C47FF | **accent-hover:** #7C5CFF
-- **text-primary:** #F0F0F5 | **text-secondary:** #8E8EA0 | **text-muted:** #52525B
-- **success:** #22C55E | **error:** #EF4444 | **warning:** #F59E0B
-- **Fonts:** Inter (body), JetBrains Mono (handle display)
+### Handle Availability Rules
+| Scenario | `/api/waitlist/check` Response |
+|----------|-------------------------------|
+| Handle not in waitlist or handles | `{available: true}` |
+| Handle claimed (in `handles` table) | `{available: false, reason: "claimed"}` |
+| Handle reserved by DIFFERENT email | `{available: false, reason: "waitlist_reserved"}` |
+| Handle reserved by SAME email | `{available: true, reserved_for_you: true}` |
+| System reserved (admin, api, etc.) | `{available: false, reason: "reserved"}` |
 
 ---
 
@@ -87,39 +84,23 @@ The application runs in **mock mode** when Supabase credentials are not configur
 
 ### Phase 2 — Auth, Handle, Dashboard ✅
 - [x] GitHub OAuth sign-in page (/login)
-- [x] **Dev Mode login** for local development (no credentials needed)
-- [x] OAuth callback handler (/auth/callback)
-- [x] Handle claim flow (/claim) with availability validation
-- [x] User dashboard (/dashboard) with:
-  - Handle card with verified badge
-  - Agent status card (gateway URL, last heartbeat, online/offline)
-  - Connections card (approved count, pending requests)
-  - Visibility tier card
-- [x] Settings page (/dashboard/settings) with:
-  - Display name and description
-  - Supported methods selection
-  - Gateway URL and public key
-  - Visibility tier selection (1/2/3)
-  - Auto-approve verified users option
-  - Danger zone (delete handle)
-- [x] Public profile pages (/@handle) with:
-  - Handle display with verification badge
-  - Last seen indicator
-  - Request Connection modal
-- [x] API Routes:
-  - POST/PUT /api/handle — claim and update
-  - GET /api/handle/me — current user handle
-  - POST /api/heartbeat — agent heartbeat
-  - GET /api/resolve/[handle] — A2A card with tiered access
-  - POST /api/connections/request — send connection request
-  - GET /api/connections/pending — list pending requests
-  - PATCH /api/connections/[id] — approve/reject connection
+- [x] Dev Mode login for local development
+- [x] OAuth callback with **auto-linking** from waitlist
+- [x] Handle claim flow with **waitlist protection**
+- [x] User dashboard with handle card, agent status, connections
+- [x] Settings page with all configuration options
+- [x] Public profile pages (/@handle)
+- [x] Connection request system
 
-### Cleanup & Documentation ✅
-- [x] Removed old Python backend (migrated to Next.js API routes)
-- [x] Updated README.md with full documentation
-- [x] Created frontend/README.md
-- [x] Comprehensive mock mode support
+### Waitlist Protection (Latest) ✅
+- [x] `/api/waitlist/check` accepts optional `email` parameter
+- [x] Checks BOTH `waitlist` AND `handles` tables
+- [x] Returns `reserved_for_you: true` when email matches reservation
+- [x] `/api/handle` validates against waitlist before claiming
+- [x] Rejects claims for handles reserved by different emails
+- [x] Auth callback auto-claims reserved handles for matching emails
+- [x] Claim page passes user email when checking availability
+- [x] Clear error messages for reserved vs claimed handles
 
 ---
 
@@ -130,7 +111,7 @@ The application runs in **mock mode** when Supabase credentials are not configur
 |--------|------|-------------|
 | id | uuid | Primary key |
 | email | text | Unique, not null |
-| desired_handle | text | Optional |
+| desired_handle | text | Reserved handle (protected) |
 | source | text | e.g., "landing_page" |
 | created_at | timestamptz | Auto-generated |
 
@@ -142,11 +123,8 @@ The application runs in **mock mode** when Supabase credentials are not configur
 | owner_id | uuid | FK to auth.users |
 | display_name | text | Optional |
 | description | text | Max 280 chars |
-| target_gateway | text | https:// or wss:// URL |
-| public_key | text | Ed25519 multibase |
-| supported_methods | text[] | e.g., ['GET_AVAILABILITY'] |
+| target_gateway | text | Agent gateway URL |
 | visibility_tier | int | 1, 2, or 3 |
-| auto_approve_rules | jsonb | e.g., {verified_only: true} |
 | trust_score | int | Default 0 |
 | last_heartbeat | timestamptz | Updated by heartbeat API |
 | created_at | timestamptz | Auto-generated |
@@ -160,7 +138,6 @@ The application runs in **mock mode** when Supabase credentials are not configur
 | status | text | pending/approved/rejected/blocked |
 | requester_message | text | Optional message |
 | created_at | timestamptz | Auto-generated |
-| resolved_at | timestamptz | When status changed |
 
 ---
 
@@ -205,13 +182,14 @@ The application runs in **mock mode** when Supabase credentials are not configur
 
 ---
 
-## Test Results
-- Backend: 100% (24/24 tests passed)
+## Test Results (Phase 2 + Waitlist Protection)
+- Backend: 100% (15/15 waitlist protection tests passed)
 - Frontend: 100% (all pages verified)
-- Mock mode: Fully functional
+- Flows: Both reservation and direct sign-in flows working
 
 ---
 
-## Files Cleaned Up
-- `/app/backend/` - Removed (migrated to Next.js API routes)
-- `/app/tests/` - Removed (empty Python test dir)
+## Known Limitations
+- **MOCKED:** Supabase and GitHub OAuth use placeholder credentials in dev mode
+- In-memory store resets on server restart
+- Rate limiting: 10 requests/60 seconds per IP (may need adjustment)
