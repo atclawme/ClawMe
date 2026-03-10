@@ -1,7 +1,8 @@
 {
   "/api/handle/me/route": "app/api/handle/me/route.js",
   "/api/connections/pending/route": "app/api/connections/pending/route.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/claim/page": "app/claim/page.js",
   "/login/page": "app/login/page.js",
-  "/page": "app/page.js",
-  "/dashboard/page": "app/dashboard/page.js"
+  "/page": "app/page.js"
 }
