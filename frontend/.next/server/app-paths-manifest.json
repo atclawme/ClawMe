@@ -1,16 +1,4 @@
 {
   "/api/waitlist/count/route": "app/api/waitlist/count/route.js",
-  "/api/waitlist/check/route": "app/api/waitlist/check/route.js",
-  "/api/waitlist/route": "app/api/waitlist/route.js",
-  "/api/handle/me/route": "app/api/handle/me/route.js",
-  "/api/handle/route": "app/api/handle/route.js",
-  "/api/heartbeat/route": "app/api/heartbeat/route.js",
-  "/api/resolve/[handle]/route": "app/api/resolve/[handle]/route.js",
-  "/api/connections/pending/route": "app/api/connections/pending/route.js",
-  "/api/connections/request/route": "app/api/connections/request/route.js",
-  "/login/page": "app/login/page.js",
-  "/dashboard/page": "app/dashboard/page.js",
-  "/dashboard/settings/page": "app/dashboard/settings/page.js",
-  "/[handle]/page": "app/[handle]/page.js",
   "/page": "app/page.js"
 }
