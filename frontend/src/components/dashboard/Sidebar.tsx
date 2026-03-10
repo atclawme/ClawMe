@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, Settings, LogOut, Menu, X } from 'lucide-react'
-import { createClient } from '@/lib/supabase'
+import { createClient, setMockSession, SUPABASE_READY } from '@/lib/supabase'
 import { useState } from 'react'
 
 const navItems = [
