@@ -4,6 +4,21 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/waitlist/count/route.js"
+    ],
+    "/api/handle/me/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/handle/me/route.js"
+    ],
+    "/api/handle/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/handle/route.js"
+    ],
+    "/api/resolve/[handle]/route": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/api/resolve/[handle]/route.js"
     ]
   }
 }
