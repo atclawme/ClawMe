@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase'
+import { createClient, SUPABASE_READY } from '@/lib/supabase'
 
 export default function Nav() {
   const [user, setUser] = useState<{ id: string } | null | undefined>(undefined)
@@ -10,10 +10,22 @@ export default function Nav() {
   useEffect(() => {
     const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => setUser(data.user))
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
-      setUser(session?.user ?? null)
-    })
-    return () => subscription.unsubscribe()
+    
+    if (SUPABASE_READY) {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+        setUser(session?.user ?? null)
+      })
+      return () => subscription.unsubscribe()
+    } else {
+      // For mock mode, check localStorage periodically
+      const checkMockSession = () => {
+        const isMock = typeof window !== 'undefined' && localStorage.getItem('clawme_mock_session') === 'true'
+        setUser(isMock ? { id: 'mock-user-dev' } : null)
+      }
+      checkMockSession()
+      window.addEventListener('storage', checkMockSession)
+      return () => window.removeEventListener('storage', checkMockSession)
+    }
   }, [])
 
   const scrollToWaitlist = useCallback(() => {

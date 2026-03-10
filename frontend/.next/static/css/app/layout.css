@@ -869,6 +869,9 @@ video {
 .mt-auto {
   margin-top: auto;
 }
+.mt-0\.5 {
+  margin-top: 0.125rem;
+}
 .line-clamp-2 {
   overflow: hidden;
   display: -webkit-box;
@@ -1189,6 +1192,9 @@ video {
 }
 .cursor-pointer {
   cursor: pointer;
+}
+.cursor-not-allowed {
+  cursor: not-allowed;
 }
 .touch-none {
   touch-action: none;
