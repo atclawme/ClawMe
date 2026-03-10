@@ -27,12 +27,6 @@ export default function ClaimPage() {
       // Check if already has handle
       const res = await fetch('/api/handle/me')
       if (res.ok) { router.replace('/dashboard'); return }
-
-      // Check waitlist for pre-fill
-      if (user.email) {
-        // We look for the user's email in the waitlist via a simple server check
-        // Just check availability of any desired_handle stored in metadata or skip
-      }
     }
     init()
   }, [router])
