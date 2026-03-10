@@ -17,8 +17,13 @@ export default function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   const signOut = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
+    if (!SUPABASE_READY) {
+      // Mock mode - clear mock session
+      setMockSession(false)
+    } else {
+      const supabase = createClient()
+      await supabase.auth.signOut()
+    }
     router.push('/login')
   }
 
