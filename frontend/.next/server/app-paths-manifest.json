@@ -1,1 +1,3 @@
-{}
+{
+  "/api/waitlist/count/route": "app/api/waitlist/count/route.js"
+}
