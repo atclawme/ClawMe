@@ -61,7 +61,8 @@ class TestWaitlistCheckAPI:
     
     def test_check_invalid_handle_format(self):
         """Invalid handle format should return 422"""
-        response = requests.get(f"{BASE_URL}/api/waitlist/check?handle=ab")  # Too short
+        # Handle regex is 2-24 chars, so test with 1 char (too short)
+        response = requests.get(f"{BASE_URL}/api/waitlist/check?handle=a")  # Too short (1 char)
         assert response.status_code == 422
         
         response = requests.get(f"{BASE_URL}/api/waitlist/check?handle=invalid-handle")  # Has dash
@@ -131,7 +132,7 @@ class TestHandleClaimAPI:
         """Should reject invalid handle formats"""
         response = requests.post(
             f"{BASE_URL}/api/handle",
-            json={"handle": "ab"},  # Too short
+            json={"handle": "a"},  # Too short (1 char, regex requires 2-24)
             headers={"Content-Type": "application/json"}
         )
         assert response.status_code == 422
@@ -157,13 +158,14 @@ class TestWaitlistFormAPI:
         
         response = requests.post(
             f"{BASE_URL}/api/waitlist",
-            json={"email": unique_email, "handle": unique_handle},
+            json={"email": unique_email, "desired_handle": unique_handle},  # API uses desired_handle
             headers={"Content-Type": "application/json"}
         )
         assert response.status_code == 201
         data = response.json()
-        assert data.get("email") == unique_email
-        assert data.get("desired_handle") == unique_handle
+        # API returns {success: true, handle: "..."}
+        assert data.get("success") == True
+        assert data.get("handle") == unique_handle
         
         # Verify the handle is now reserved
         check_response = requests.get(f"{BASE_URL}/api/waitlist/check?handle={unique_handle}")
@@ -194,10 +196,12 @@ class TestWaitlistFormAPI:
         
         response = requests.post(
             f"{BASE_URL}/api/waitlist",
-            json={"email": unique_email, "handle": "alice"},  # alice is already reserved
+            json={"email": unique_email, "desired_handle": "alice"},  # alice is already reserved
             headers={"Content-Type": "application/json"}
         )
         assert response.status_code == 409
+        data = response.json()
+        assert data.get("error") == "handle_taken"
 
 
 class TestHandleMeAPI:
