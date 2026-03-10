@@ -1,9 +1,6 @@
 {
   "/api/waitlist/check/route": "app/api/waitlist/check/route.js",
-  "/api/handle/route": "app/api/handle/route.js",
-  "/api/waitlist/route": "app/api/waitlist/route.js",
-  "/api/handle/me/route": "app/api/handle/me/route.js",
-  "/api/waitlist/count/route": "app/api/waitlist/count/route.js",
   "/page": "app/page.js",
-  "/login/page": "app/login/page.js"
+  "/login/page": "app/login/page.js",
+  "/dashboard/page": "app/dashboard/page.js"
 }
