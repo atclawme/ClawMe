@@ -1,21 +1,23 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Loader2, CheckCircle2, XCircle } from 'lucide-react'
+import { Loader2, CheckCircle2, XCircle, AlertCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { validateHandle } from '@/lib/validations'
 
-type AvailStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid'
+type AvailStatus = 'idle' | 'checking' | 'available' | 'taken' | 'reserved' | 'invalid'
 
 export default function ClaimPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [handle, setHandle] = useState('')
+  const [userEmail, setUserEmail] = useState('')
   const [availability, setAvailability] = useState<AvailStatus>('idle')
   const [handleError, setHandleError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [prefillHint, setPrefillHint] = useState('')
+  const [reservedForYou, setReservedForYou] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -23,6 +25,9 @@ export default function ClaimPage() {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) { router.replace('/login'); return }
+
+      // Store user email for availability checks
+      setUserEmail(user.email?.toLowerCase() || '')
 
       // Check if already has handle
       const res = await fetch('/api/handle/me')
@@ -32,29 +37,34 @@ export default function ClaimPage() {
   }, [router])
 
   const checkAvailability = useCallback(async (value: string) => {
-    if (!value) { setAvailability('idle'); return }
+    if (!value) { setAvailability('idle'); setReservedForYou(false); return }
     const v = validateHandle(value)
-    if (!v.valid) { setAvailability('invalid'); setHandleError(v.error || 'Invalid'); return }
-    setAvailability('checking'); setHandleError('')
+    if (!v.valid) { setAvailability('invalid'); setHandleError(v.error || 'Invalid'); setReservedForYou(false); return }
+    setAvailability('checking'); setHandleError(''); setReservedForYou(false)
     try {
-      const res = await fetch(`/api/waitlist/check?handle=${encodeURIComponent(value)}`)
+      // Pass email to check if this handle is reserved for the current user
+      const emailParam = userEmail ? `&email=${encodeURIComponent(userEmail)}` : ''
+      const res = await fetch(`/api/waitlist/check?handle=${encodeURIComponent(value)}${emailParam}`)
       const data = await res.json()
-      // Also check handles table
-      const handleRes = await fetch(`/api/resolve/${value}`)
-      if (handleRes.ok) {
-        setAvailability('taken')
+      
+      if (data.available) {
+        setAvailability('available')
+        setReservedForYou(data.reserved_for_you === true)
+      } else if (data.reason === 'waitlist_reserved') {
+        setAvailability('reserved')
+        setHandleError('This handle is reserved by someone on the waitlist')
       } else {
-        setAvailability(data.available ? 'available' : 'taken')
+        setAvailability('taken')
       }
     } catch { setAvailability('idle') }
-  }, [])
+  }, [userEmail])
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     if (handle) {
       debounceRef.current = setTimeout(() => checkAvailability(handle), 300)
     } else {
-      setAvailability('idle'); setHandleError('')
+      setAvailability('idle'); setHandleError(''); setReservedForYou(false)
     }
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
   }, [handle, checkAvailability])
@@ -72,13 +82,23 @@ export default function ClaimPage() {
       else {
         const data = await res.json()
         if (data.error === 'handle_taken') setAvailability('taken')
-        setHandleError(data.error || 'Failed to claim handle')
+        else if (data.error === 'handle_reserved') {
+          setAvailability('reserved')
+          setHandleError(data.message || 'This handle is reserved')
+        }
+        else setHandleError(data.error || 'Failed to claim handle')
       }
     } catch { setHandleError('Something went wrong') }
     finally { setLoading(false) }
   }
 
-  const borderColor = availability === 'available' ? '#22C55E' : availability === 'taken' || availability === 'invalid' ? '#EF4444' : undefined
+  const borderColor = 
+    availability === 'available' ? '#22C55E' : 
+    availability === 'taken' || availability === 'reserved' || availability === 'invalid' ? '#EF4444' : 
+    undefined
+
+  // Check for welcome message (auto-claimed from waitlist)
+  const isWelcome = searchParams.get('welcome') === 'true'
 
   return (
     <main className="min-h-screen flex items-center justify-center px-6 bg-[#0A0A0F]">
@@ -111,13 +131,6 @@ export default function ClaimPage() {
           className="rounded-xl p-8"
           style={{ backgroundColor: '#13131A', border: '1px solid #27272F' }}
         >
-          {prefillHint && (
-            <p className="text-[13px] text-[#6C47FF] mb-4 flex items-center gap-2">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#6C47FF] inline-block" />
-              We saved this for you from the waitlist
-            </p>
-          )}
-
           <div className="mb-5">
             <label className="block text-[13px] font-medium uppercase text-[#8E8EA0] mb-2" style={{ letterSpacing: '0.05em' }}>
               Your handle
@@ -148,17 +161,29 @@ export default function ClaimPage() {
               />
               {availability === 'checking' && <Loader2 className="absolute right-4 w-4 h-4 text-[#8E8EA0] animate-spin" />}
               {availability === 'available' && <CheckCircle2 className="absolute right-4 w-4 h-4" style={{ color: '#22C55E' }} />}
-              {availability === 'taken' && <XCircle className="absolute right-4 w-4 h-4" style={{ color: '#EF4444' }} />}
+              {(availability === 'taken' || availability === 'reserved') && <XCircle className="absolute right-4 w-4 h-4" style={{ color: '#EF4444' }} />}
             </div>
-            <div className="min-h-[20px] mt-1.5">
-              {availability === 'available' && (
+            <div className="min-h-[24px] mt-1.5">
+              {availability === 'available' && reservedForYou && (
+                <p className="text-[13px] flex items-center gap-1.5" style={{ color: '#22C55E' }}>
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  @{handle} is reserved for you from the waitlist!
+                </p>
+              )}
+              {availability === 'available' && !reservedForYou && (
                 <p className="text-[13px] flex items-center gap-1.5" style={{ color: '#22C55E' }}>
                   <span className="w-1.5 h-1.5 rounded-full bg-[#22C55E] inline-block" />
                   @{handle} is available
                 </p>
               )}
               {availability === 'taken' && (
-                <p className="text-[13px]" style={{ color: '#EF4444' }}>@{handle} is taken</p>
+                <p className="text-[13px]" style={{ color: '#EF4444' }}>@{handle} is already claimed</p>
+              )}
+              {availability === 'reserved' && (
+                <p className="text-[13px] flex items-center gap-1.5" style={{ color: '#EF4444' }}>
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  @{handle} is reserved by someone on the waitlist
+                </p>
               )}
               {availability === 'invalid' && handleError && (
                 <p className="text-[13px]" style={{ color: '#EF4444' }}>{handleError}</p>
