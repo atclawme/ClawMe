@@ -3,6 +3,16 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { SUPABASE_CONFIGURED, createServiceSupabase } from '@/lib/supabase-server'
 
+/**
+ * GET /auth/callback
+ * 
+ * Handles GitHub OAuth callback. After successful authentication:
+ * 1. Check if user already has a handle → redirect to /dashboard
+ * 2. Check if user's email is on the waitlist with a reserved handle:
+ *    - If the reserved handle is still available, auto-claim it
+ *    - Redirect to /dashboard
+ * 3. If not on waitlist or no handle reserved → redirect to /claim
+ */
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
@@ -41,17 +51,60 @@ export async function GET(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.redirect(`${origin}/login`)
 
-  // Check if user already has a handle
   const service = createServiceSupabase()
-  if (service) {
-    const { data: existing } = await service
-      .from('handles')
-      .select('id')
-      .eq('owner_id', user.id)
-      .maybeSingle()
+  if (!service) return NextResponse.redirect(`${origin}/claim`)
 
-    return NextResponse.redirect(`${origin}${existing ? '/dashboard' : '/claim'}`)
+  // 1. Check if user already has a handle
+  const { data: existingHandle } = await service
+    .from('handles')
+    .select('id')
+    .eq('owner_id', user.id)
+    .maybeSingle()
+
+  if (existingHandle) {
+    return NextResponse.redirect(`${origin}/dashboard`)
   }
 
+  // 2. Check if user's email is on the waitlist with a reserved handle
+  const userEmail = user.email?.toLowerCase()
+  if (userEmail) {
+    const { data: waitlistEntry } = await service
+      .from('waitlist')
+      .select('id, desired_handle')
+      .eq('email', userEmail)
+      .maybeSingle()
+
+    if (waitlistEntry?.desired_handle) {
+      const reservedHandle = waitlistEntry.desired_handle.toLowerCase()
+
+      // Check if the reserved handle is still available (not claimed by someone else)
+      const { data: handleTaken } = await service
+        .from('handles')
+        .select('id')
+        .eq('handle', reservedHandle)
+        .maybeSingle()
+
+      if (!handleTaken) {
+        // Auto-claim the reserved handle for this user
+        const { error: claimError } = await service
+          .from('handles')
+          .insert({
+            handle: reservedHandle,
+            owner_id: user.id,
+            visibility_tier: 1,
+            trust_score: 0,
+          })
+
+        if (!claimError) {
+          // Successfully auto-claimed! Redirect to dashboard
+          return NextResponse.redirect(`${origin}/dashboard?welcome=true`)
+        }
+        // If claim failed (race condition?), fall through to /claim
+      }
+      // Handle was already taken by someone else, go to /claim to pick a new one
+    }
+  }
+
+  // 3. No waitlist reservation or handle already taken → manual claim
   return NextResponse.redirect(`${origin}/claim`)
 }

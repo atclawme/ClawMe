@@ -848,6 +848,9 @@ video {
 .mr-2 {
   margin-right: 0.5rem;
 }
+.mt-0\.5 {
+  margin-top: 0.125rem;
+}
 .mt-1 {
   margin-top: 0.25rem;
 }
@@ -868,9 +871,6 @@ video {
 }
 .mt-auto {
   margin-top: auto;
-}
-.mt-0\.5 {
-  margin-top: 0.125rem;
 }
 .line-clamp-2 {
   overflow: hidden;
@@ -1190,11 +1190,11 @@ video {
 .cursor-default {
   cursor: default;
 }
-.cursor-pointer {
-  cursor: pointer;
-}
 .cursor-not-allowed {
   cursor: not-allowed;
+}
+.cursor-pointer {
+  cursor: pointer;
 }
 .touch-none {
   touch-action: none;
