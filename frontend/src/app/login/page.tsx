@@ -24,7 +24,8 @@ export default function LoginPage() {
     setMockSession(true)
     // Small delay for UX
     await new Promise((r) => setTimeout(r, 500))
-    router.push('/dashboard')
+    // Use window.location for a full page reload to ensure all components pick up the new session
+    window.location.href = '/dashboard'
   }
 
   return (
