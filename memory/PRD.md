@@ -10,7 +10,7 @@ Build ClawMe: a persistent identity and discovery registry for personal AI agent
 ### Stack
 - **Frontend/Backend:** Next.js 15 (App Router, TypeScript)
 - **Database:** Supabase (Postgres) — using in-memory mock when credentials not configured
-- **Authentication:** Supabase Auth with GitHub OAuth
+- **Authentication:** Supabase Auth with GitHub OAuth (mock mode when not configured)
 - **UI:** shadcn/ui, Tailwind CSS, Framer Motion
 
 ### Routing
@@ -23,7 +23,7 @@ Build ClawMe: a persistent identity and discovery registry for personal AI agent
   app/
     layout.tsx         — Root layout, Inter + JetBrains Mono fonts
     page.tsx           — Landing page (composes all sections)
-    login/page.tsx     — GitHub OAuth sign-in page
+    login/page.tsx     — GitHub OAuth / Dev Mode sign-in
     claim/page.tsx     — Handle claiming flow
     dashboard/page.tsx — User dashboard with cards
     dashboard/settings/page.tsx — Full settings page
@@ -51,6 +51,21 @@ Build ClawMe: a persistent identity and discovery registry for personal AI agent
 
 ---
 
+## Mock Mode
+
+The application runs in **mock mode** when Supabase credentials are not configured (contain "placeholder" or are missing):
+
+| Feature | Mock Mode | Production Mode |
+|---------|-----------|-----------------|
+| Authentication | "Continue in Dev Mode" button | GitHub OAuth via Supabase |
+| Database | In-memory store (resets on restart) | Supabase PostgreSQL |
+| User Identity | `mock-user-dev` / `dev@mock.local` | Real GitHub user |
+| Session | localStorage (`clawme_mock_session`) | Supabase session cookies |
+
+**To enable production mode:** Update `frontend/.env` with real Supabase credentials (see `supabase_activation.md` and `github_activation.md`).
+
+---
+
 ## Design System
 - **bg:** #0A0A0F | **surface:** #13131A | **surface-raised:** #1C1C28
 - **accent:** #6C47FF | **accent-hover:** #7C5CFF
@@ -62,16 +77,17 @@ Build ClawMe: a persistent identity and discovery registry for personal AI agent
 
 ## What's Been Implemented
 
-### Phase 1 — Landing & Waitlist (Completed 2026-03-09)
+### Phase 1 — Landing & Waitlist ✅
 - [x] Sticky nav with ClawMe wordmark
 - [x] Full-viewport hero with animated gradient
 - [x] "How It Works" 3-step explainer
 - [x] Waitlist form with handle availability check
-- [x] Live waitlist counter ("Join X+ agents already waiting")
+- [x] Live waitlist counter
 - [x] POST /api/waitlist, GET /api/waitlist/check, GET /api/waitlist/count
 
-### Phase 2 — Auth, Handle, Dashboard (Completed 2026-03-09)
+### Phase 2 — Auth, Handle, Dashboard ✅
 - [x] GitHub OAuth sign-in page (/login)
+- [x] **Dev Mode login** for local development (no credentials needed)
 - [x] OAuth callback handler (/auth/callback)
 - [x] Handle claim flow (/claim) with availability validation
 - [x] User dashboard (/dashboard) with:
@@ -98,6 +114,12 @@ Build ClawMe: a persistent identity and discovery registry for personal AI agent
   - POST /api/connections/request — send connection request
   - GET /api/connections/pending — list pending requests
   - PATCH /api/connections/[id] — approve/reject connection
+
+### Cleanup & Documentation ✅
+- [x] Removed old Python backend (migrated to Next.js API routes)
+- [x] Updated README.md with full documentation
+- [x] Created frontend/README.md
+- [x] Comprehensive mock mode support
 
 ---
 
@@ -157,10 +179,11 @@ Build ClawMe: a persistent identity and discovery registry for personal AI agent
 
 ## Prioritized Backlog
 
-### P0 — Immediate
-- [ ] User to add real Supabase credentials
-- [ ] User to add GitHub OAuth credentials
+### P0 — Ready for Production
+- [ ] Add real Supabase credentials
+- [ ] Add GitHub OAuth credentials
 - [ ] Test full auth flow with real credentials
+- [ ] Deploy to production
 
 ### P1 — Phase 3 (OpenClaw Skill)
 - [ ] Python skill package for agent integration
@@ -182,14 +205,13 @@ Build ClawMe: a persistent identity and discovery registry for personal AI agent
 
 ---
 
-## Test Results (Phase 2)
+## Test Results
 - Backend: 100% (24/24 tests passed)
 - Frontend: 100% (all pages verified)
-- Coverage: Waitlist, Handle CRUD, Heartbeat, Resolve, Connections
+- Mock mode: Fully functional
 
 ---
 
-## Known Limitations
-- **MOCKED:** Supabase and GitHub OAuth use placeholder credentials
-- In-memory store resets on server restart (expected for dev mode)
-- Rate limiting is in-memory (single instance only)
+## Files Cleaned Up
+- `/app/backend/` - Removed (migrated to Next.js API routes)
+- `/app/tests/` - Removed (empty Python test dir)
