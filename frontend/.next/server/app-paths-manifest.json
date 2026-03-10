@@ -4,5 +4,6 @@
   "/api/waitlist/route": "app/api/waitlist/route.js",
   "/api/handle/me/route": "app/api/handle/me/route.js",
   "/api/waitlist/count/route": "app/api/waitlist/count/route.js",
-  "/page": "app/page.js"
+  "/page": "app/page.js",
+  "/login/page": "app/login/page.js"
 }
