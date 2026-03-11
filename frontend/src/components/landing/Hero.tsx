@@ -3,7 +3,8 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { motion, Variants } from 'framer-motion'
 import { Button as _Button } from '@/components/ui/button'
-import { Users, Bot } from 'lucide-react'
+import { UsersIcon, UsersIconHandle } from '@/components/ui/users'
+import { BotMessageSquareIcon, BotMessageSquareIconHandle } from '@/components/ui/bot-message-square'
 
 const Button = _Button as React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>>;
 
@@ -18,6 +19,8 @@ const fadeUp: Variants = {
 
 export default function Hero() {
   const [count, setCount] = useState<number | null>(null)
+  const usersIconRef = React.useRef<UsersIconHandle>(null)
+  const botIconRef = React.useRef<BotMessageSquareIconHandle>(null)
 
   const scrollToWaitlist = useCallback(() => {
     document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' })
@@ -51,10 +54,18 @@ export default function Hero() {
         >
           <div className="inline-flex items-center gap-8 px-8 py-4 rounded-2xl bg-[#0F0F16] border border-[#1E1E26] shadow-2xl relative">
             {/* The Old Web */}
-            <div className="flex flex-col gap-2 items-center transition-all group cursor-default">
+            <div 
+              className="flex flex-col gap-2 items-center transition-all group cursor-default"
+              onMouseEnter={() => usersIconRef.current?.startAnimation()}
+              onMouseLeave={() => usersIconRef.current?.stopAnimation()}
+            >
               <span className="text-[9px] text-[#71717A] group-hover:text-[#A1A1AA] font-bold uppercase tracking-[0.2em] transition-colors">The Old Web</span>
               <div className="flex items-center gap-2 text-[#D4D4D8] group-hover:text-[#0A66C2] transition-all duration-300">
-                <Users size={16} strokeWidth={2.5} className="text-[#8E8EA0] group-hover:text-[#0A66C2]" />
+                <UsersIcon 
+                  ref={usersIconRef}
+                  size={20} 
+                  className="text-[#8E8EA0] group-hover:text-[#0A66C2]" 
+                />
                 <span className="text-[13px] font-medium italic">People on LinkedIn</span>
               </div>
             </div>
@@ -65,13 +76,17 @@ export default function Hero() {
             </div>
 
             {/* The Agentic Web */}
-            <div className="flex flex-col gap-2 items-center group/agent cursor-default transition-all">
+            <div 
+              className="flex flex-col gap-2 items-center group/agent cursor-default transition-all"
+              onMouseEnter={() => botIconRef.current?.startAnimation()}
+              onMouseLeave={() => botIconRef.current?.stopAnimation()}
+            >
               <span className="text-[9px] text-[#6C47FF] font-black uppercase tracking-[0.2em] group-hover/agent:text-[#8C6DFF] transition-colors">The Agentic Web</span>
               <div className="flex items-center gap-3 text-[#F0F0F5]">
                 <div className="relative">
-                  <Bot 
-                    size={18} 
-                    strokeWidth={2.5} 
+                  <BotMessageSquareIcon 
+                    ref={botIconRef}
+                    size={22} 
                     className="text-[#6C47FF] drop-shadow-[0_0_8px_rgba(108,71,255,0.4)] transition-all duration-300 group-hover/agent:scale-110 group-hover/agent:rotate-12 group-hover/agent:text-[#8C6DFF] group-hover/agent:drop-shadow-[0_0_15px_rgba(108,71,255,0.8)]" 
                   />
                 </div>
