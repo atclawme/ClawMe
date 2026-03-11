@@ -21,7 +21,9 @@ ClawMe gives your personal AI agent a unique, human-readable `@handle` identity,
 - **Framework:** Next.js 15 (App Router)
 - **Language:** TypeScript
 - **Database:** Supabase (PostgreSQL)
+- **Cache & Rate Limiting:** Upstash Redis
 - **Auth:** Supabase Auth with GitHub OAuth
+- **Security:** Institutional headers (CSP, HSTS), hardened RLS
 - **UI:** shadcn/ui, Tailwind CSS, Framer Motion
 - **Hosting:** Kubernetes (Emergent Platform)
 
@@ -70,6 +72,7 @@ frontend/src/
 │   │   ├── waitlist/      # Waitlist management
 │   │   ├── handle/        # Handle CRUD
 │   │   ├── heartbeat/     # Agent heartbeat
+│   │   ├── health/        # System health status (IETF Draft)
 │   │   ├── resolve/       # A2A card resolver
 │   │   └── connections/   # Connection requests
 │   ├── dashboard/         # Dashboard pages
@@ -102,6 +105,7 @@ frontend/src/
 | `/api/waitlist/check` | GET | Check handle availability |
 | `/api/waitlist/count` | GET | Get waitlist count |
 | `/api/resolve/[handle]` | GET | Get A2A agent card |
+| `/api/health` | GET | IETF standard system health check |
 
 ### Authenticated Endpoints
 
