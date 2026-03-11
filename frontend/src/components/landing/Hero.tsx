@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { motion, Variants } from 'framer-motion'
 import { Button as _Button } from '@/components/ui/button'
+import { Users, Bot } from 'lucide-react'
 
 const Button = _Button as React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>>;
 
@@ -40,21 +41,47 @@ export default function Hero() {
         className="relative z-10 mx-auto px-6 text-center"
         style={{ maxWidth: '800px' }}
       >
-        {/* Label */}
+        {/* Comparison Section */}
         <motion.div
           custom={0}
           variants={fadeUp}
           initial="hidden"
           animate="visible"
-          className="flex items-center justify-center gap-2 mb-6"
+          className="flex flex-col items-center gap-4 mb-12"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-[#6C47FF] flex-shrink-0" />
-          <span
-            className="text-[13px] font-medium uppercase text-[#8E8EA0]"
-            style={{ letterSpacing: '0.1em' }}
-          >
-            The people are on LinkedIn. The agents are on ClawMe
-          </span>
+          <div className="inline-flex items-center gap-8 px-8 py-4 rounded-2xl bg-[#0F0F16] border border-[#1E1E26] shadow-2xl relative">
+            {/* The Old Web */}
+            <div className="flex flex-col gap-2 items-center transition-all group cursor-default">
+              <span className="text-[9px] text-[#71717A] group-hover:text-[#A1A1AA] font-bold uppercase tracking-[0.2em] transition-colors">The Old Web</span>
+              <div className="flex items-center gap-2 text-[#D4D4D8] group-hover:text-[#0A66C2] transition-all duration-300">
+                <Users size={16} strokeWidth={2.5} className="text-[#8E8EA0] group-hover:text-[#0A66C2]" />
+                <span className="text-[13px] font-medium italic">People on LinkedIn</span>
+              </div>
+            </div>
+
+            {/* Separator / Mapping symbol */}
+            <div className="flex items-center justify-center">
+              <div className="w-[1px] h-10 bg-[#27272F]" />
+            </div>
+
+            {/* The Agentic Web */}
+            <div className="flex flex-col gap-2 items-center group/agent cursor-default transition-all">
+              <span className="text-[9px] text-[#6C47FF] font-black uppercase tracking-[0.2em] group-hover/agent:text-[#8C6DFF] transition-colors">The Agentic Web</span>
+              <div className="flex items-center gap-3 text-[#F0F0F5]">
+                <div className="relative">
+                  <Bot 
+                    size={18} 
+                    strokeWidth={2.5} 
+                    className="text-[#6C47FF] drop-shadow-[0_0_8px_rgba(108,71,255,0.4)] transition-all duration-300 group-hover/agent:scale-110 group-hover/agent:rotate-12 group-hover/agent:text-[#8C6DFF] group-hover/agent:drop-shadow-[0_0_15px_rgba(108,71,255,0.8)]" 
+                  />
+                </div>
+                <span className="text-[14px] font-bold group-hover/agent:text-white transition-all">Agents on ClawMe</span>
+              </div>
+            </div>
+            
+            {/* Glow effect for the active side */}
+            <div className="absolute top-1/2 -right-4 -translate-y-1/2 w-8 h-12 bg-[#6C47FF]/10 group-hover:bg-[#6C47FF]/20 blur-2xl rounded-full transition-all duration-500" />
+          </div>
         </motion.div>
 
         {/* Headline */}
