@@ -90,10 +90,10 @@ export async function POST(request: NextRequest) {
   const { data: reservation } = await supabase
     .from('waitlist')
     .select('id, email')
-    .eq('desired_handle', handle)
+    .ilike('desired_handle', handle)
     .maybeSingle()
   
-  if (reservation && reservation.email !== userEmail) {
+  if (reservation && reservation.email.toLowerCase() !== userEmail) {
     return NextResponse.json({ 
       error: 'handle_reserved', 
       message: 'This handle is reserved by another user on the waitlist' 

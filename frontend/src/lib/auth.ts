@@ -1,4 +1,4 @@
-import { createServerSupabase, SUPABASE_CONFIGURED } from './supabase-server'
+import { createServerSupabase, createServiceSupabase, SUPABASE_CONFIGURED } from './supabase-server'
 import { NextResponse } from 'next/server'
 import { store, MOCK_USER_ID } from './mock-store'
 

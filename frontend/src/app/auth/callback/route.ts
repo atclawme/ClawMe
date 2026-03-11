@@ -67,11 +67,12 @@ export async function GET(request: NextRequest) {
 
   // 2. Check if user's email is on the waitlist with a reserved handle
   const userEmail = user.email?.toLowerCase()
+
   if (userEmail) {
     const { data: waitlistEntry } = await service
       .from('waitlist')
       .select('id, desired_handle')
-      .eq('email', userEmail)
+      .ilike('email', userEmail)
       .maybeSingle()
 
     if (waitlistEntry?.desired_handle) {
@@ -98,6 +99,8 @@ export async function GET(request: NextRequest) {
         if (!claimError) {
           // Successfully auto-claimed! Redirect to dashboard
           return NextResponse.redirect(`${origin}/dashboard?welcome=true`)
+        } else {
+          console.error('[auth/callback] Error auto-claiming handle:', claimError)
         }
         // If claim failed (race condition?), fall through to /claim
       }
