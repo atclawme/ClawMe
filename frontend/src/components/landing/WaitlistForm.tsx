@@ -6,6 +6,7 @@ import { CheckCircle, Loader2, CheckCircle2, XCircle } from 'lucide-react'
 import { validateHandle } from '@/lib/validations'
 import { Input as _Input } from '@/components/ui/input'
 import { Button as _Button } from '@/components/ui/button'
+import WaitlistSurvey from './WaitlistSurvey'
 
 const Input = _Input as React.FC<React.InputHTMLAttributes<HTMLInputElement>>;
 const Button = _Button as React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>>;
@@ -196,6 +197,8 @@ export default function WaitlistForm() {
                 We&apos;ll email you at{' '}
                 <span className="text-[#F0F0F5]">{successEmail}</span> when ClawMe launches.
               </p>
+
+              <WaitlistSurvey email={successEmail} />
             </motion.div>
           ) : (
             <motion.div key="form" initial={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-5">
