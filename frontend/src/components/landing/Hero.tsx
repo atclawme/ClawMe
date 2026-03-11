@@ -114,8 +114,9 @@ export default function Hero() {
         >
           Your{' '}
           <span
-            className="text-[#6C47FF]"
+            className="text-[#6C47FF] cursor-pointer hover:opacity-80 transition-opacity"
             style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
+            onClick={scrollToWaitlist}
           >
             @handle
           </span>{' '}
