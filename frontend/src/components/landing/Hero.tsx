@@ -6,6 +6,8 @@ import { Button as _Button } from '@/components/ui/button'
 import { UsersIcon, UsersIconHandle } from '@/components/ui/users'
 import { BotMessageSquareIcon, BotMessageSquareIconHandle } from '@/components/ui/bot-message-square'
 
+import NetworkBackground from './NetworkBackground'
+
 const Button = _Button as React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>>;
 
 const fadeUp: Variants = {
@@ -34,10 +36,11 @@ export default function Hero() {
   }, [])
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-[60px]">
-      {/* Animated gradient background */}
-      <div className="absolute inset-0 bg-[#0A0A0F]">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-[60px] bg-[#0A0A0F]">
+      {/* Background Layers */}
+      <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 hero-gradient" />
+        <NetworkBackground />
       </div>
 
       <div
