@@ -1,6 +1,13 @@
 'use client'
 
+import React from 'react'
 import { motion } from 'framer-motion'
+import { Card as _Card, CardHeader as _CardHeader, CardTitle as _CardTitle, CardContent as _CardContent } from '@/components/ui/card'
+
+const Card = _Card as React.FC<React.HTMLAttributes<HTMLDivElement>>;
+const CardHeader = _CardHeader as React.FC<React.HTMLAttributes<HTMLDivElement>>;
+const CardTitle = _CardTitle as React.FC<React.HTMLAttributes<HTMLHeadingElement>>;
+const CardContent = _CardContent as React.FC<React.HTMLAttributes<HTMLDivElement>>;
 
 const steps = [
   {
@@ -50,23 +57,27 @@ export default function HowItWorks() {
               viewport={{ once: true, margin: '-60px' }}
               transition={{ delay: i * 0.1, duration: 0.2, ease: 'easeOut' }}
               data-testid={`how-it-works-card-${i + 1}`}
-              className="relative bg-[#13131A] border border-[#27272F] rounded-xl p-8 overflow-hidden hover:border-[#3F3F50] transition-colors"
-              style={{ transitionDuration: '150ms' }}
             >
-              {/* Decorative step number */}
-              <span
-                className="absolute -top-4 -right-2 font-bold leading-none select-none text-[#6C47FF]"
-                style={{ fontSize: '96px', opacity: 0.07 }}
-              >
-                {step.number}
-              </span>
+              <Card className="relative h-full bg-[#13131A] border-[#27272F] overflow-hidden hover:border-[#3F3F50] transition-colors rounded-xl border p-2">
+                {/* Decorative step number */}
+                <span
+                  className="absolute -top-4 -right-2 font-bold leading-none select-none text-[#6C47FF]"
+                  style={{ fontSize: '96px', opacity: 0.2 }}
+                >
+                  {step.number}
+                </span>
 
-              <h3 className="text-[18px] font-bold text-[#F0F0F5] mb-3 relative z-10">
-                {step.title}
-              </h3>
-              <p className="text-[15px] text-[#8E8EA0] leading-[1.7] relative z-10">
-                {step.body}
-              </p>
+                <CardHeader>
+                  <CardTitle className="text-[18px] font-bold text-[#F0F0F5] relative z-10">
+                    {step.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-[15px] text-[#8E8EA0] leading-[1.7] relative z-10">
+                    {step.body}
+                  </p>
+                </CardContent>
+              </Card>
             </motion.div>
           ))}
         </div>

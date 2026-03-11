@@ -1,9 +1,12 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import React, { useCallback, useEffect, useState } from 'react'
+import { motion, Variants } from 'framer-motion'
+import { Button as _Button } from '@/components/ui/button'
 
-const fadeUp = {
+const Button = _Button as React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>>;
+
+const fadeUp: Variants = {
   hidden: { opacity: 0, y: 12 },
   visible: (i: number) => ({
     opacity: 1,
@@ -100,17 +103,19 @@ export default function Hero() {
           animate="visible"
           className="flex flex-col items-center gap-3"
         >
-          <motion.button
-            onClick={scrollToWaitlist}
-            data-testid="hero-cta-btn"
-            className="bg-[#6C47FF] hover:bg-[#7C5CFF] text-white font-semibold px-8 py-4 rounded-lg text-[14px] tracking-[0.01em] transition-colors"
-            style={{ transitionDuration: '150ms' }}
+          <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
           >
-            Reserve your @handle
-          </motion.button>
+            <Button
+              onClick={scrollToWaitlist}
+              data-testid="hero-cta-btn"
+              className="bg-[#6C47FF] hover:bg-[#7C5CFF] text-white font-semibold px-8 py-6 rounded-lg text-base tracking-[0.01em]"
+            >
+              Reserve your @handle
+            </Button>
+          </motion.div>
           <span className="text-[13px] text-[#52525B]">Free to join. No credit card.</span>
           {count !== null && count > 0 && (
             <motion.span

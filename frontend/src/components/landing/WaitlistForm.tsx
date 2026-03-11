@@ -4,6 +4,11 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, Loader2, CheckCircle2, XCircle } from 'lucide-react'
 import { validateHandle } from '@/lib/validations'
+import { Input as _Input } from '@/components/ui/input'
+import { Button as _Button } from '@/components/ui/button'
+
+const Input = _Input as React.FC<React.InputHTMLAttributes<HTMLInputElement>>;
+const Button = _Button as React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>>;
 
 type AvailabilityStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 'rate_limited'
 
@@ -212,7 +217,7 @@ export default function WaitlistForm() {
                   >
                     @
                   </span>
-                  <input
+                  <Input
                     id="handle-input"
                     type="text"
                     value={handle}
@@ -221,7 +226,7 @@ export default function WaitlistForm() {
                     data-testid="handle-input"
                     autoComplete="off"
                     spellCheck={false}
-                    className="w-full h-12 rounded-lg pl-9 pr-10 text-[#F0F0F5] text-base placeholder-[#52525B] outline-none transition-colors"
+                    className="w-full h-12 rounded-lg pl-9 pr-10 text-[#F0F0F5] text-base placeholder-[#52525B] outline-none transition-colors border-0"
                     style={{
                       backgroundColor: '#1C1C28',
                       border: `1px solid ${borderColor() || '#3F3F50'}`,
@@ -320,14 +325,14 @@ export default function WaitlistForm() {
                 >
                   Email address
                 </label>
-                <input
+                <Input
                   id="email-input"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   data-testid="email-input"
-                  className="w-full h-12 rounded-lg px-4 text-[#F0F0F5] text-base placeholder-[#52525B] outline-none transition-colors"
+                  className="w-full h-12 rounded-lg px-4 text-[#F0F0F5] text-base placeholder-[#52525B] outline-none transition-colors border-0"
                   style={{
                     backgroundColor: '#1C1C28',
                     border: '1px solid #3F3F50',
@@ -352,29 +357,33 @@ export default function WaitlistForm() {
               </div>
 
               {/* Submit Button */}
-              <motion.button
-                onClick={handleSubmit}
-                disabled={isSubmitDisabled}
-                data-testid="waitlist-submit-btn"
-                className="w-full h-12 text-white font-semibold text-sm rounded-lg tracking-[0.01em] transition-colors flex items-center justify-center"
-                style={{
-                  backgroundColor: isSubmitDisabled ? '#6C47FF80' : '#6C47FF',
-                  transitionDuration: '150ms',
-                  cursor: isSubmitDisabled ? 'not-allowed' : 'pointer',
-                  opacity: isSubmitDisabled ? 0.5 : 1,
-                }}
+              <motion.div
                 whileHover={!isSubmitDisabled ? { scale: 1.02 } : {}}
                 whileTap={!isSubmitDisabled ? { scale: 0.98 } : {}}
                 transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+                className="w-full"
               >
-                {loading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : handle ? (
-                  `Reserve @${handle}`
-                ) : (
-                  'Reserve my handle'
-                )}
-              </motion.button>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isSubmitDisabled}
+                  data-testid="waitlist-submit-btn"
+                  className="w-full h-12 text-white font-semibold text-sm rounded-lg tracking-[0.01em] flex items-center justify-center transition-colors"
+                  style={{
+                    backgroundColor: isSubmitDisabled ? '#6C47FF80' : '#6C47FF',
+                    transitionDuration: '150ms',
+                    cursor: isSubmitDisabled ? 'not-allowed' : 'pointer',
+                    opacity: isSubmitDisabled ? 0.5 : 1,
+                  }}
+                >
+                  {loading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : handle ? (
+                    `Reserve @${handle}`
+                  ) : (
+                    'Reserve my handle'
+                  )}
+                </Button>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
