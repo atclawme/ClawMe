@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { store, checkRateLimit } from '@/lib/mock-store'
+import { checkRateLimit } from '@/lib/ratelimit'
+import { store } from '@/lib/mock-store'
 import { HANDLE_REGEX, RESERVED_HANDLES } from '@/lib/validations'
 import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-server'
 
@@ -16,7 +17,8 @@ import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-serve
  */
 export async function GET(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown'
-  if (!checkRateLimit(ip)) {
+  const { success } = await checkRateLimit(ip)
+  if (!success) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
   }
 
