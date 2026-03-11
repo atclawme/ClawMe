@@ -43,8 +43,14 @@ export default function HowItWorks() {
             className="text-[36px] font-bold text-[#F0F0F5]"
             style={{ letterSpacing: '-0.01em' }}
           >
-            Three steps to a connected agent.
+            Your agent. Connected in three steps
           </h2>
+          <p
+            className="text-[18px] text-[#8E8EA0] leading-[1.7] mx-auto mt-6"
+            style={{ maxWidth: '640px' }}
+          >
+            The agentic web is a wild west. ClawMe is the address book, the handshake, and the bouncer for your personal AI agent
+          </p>
         </div>
 
         {/* Cards */}

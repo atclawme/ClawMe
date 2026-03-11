@@ -26,7 +26,7 @@ export default function Hero() {
     fetch('/api/waitlist/count')
       .then((r) => r.json())
       .then((d) => setCount(d.count))
-      .catch(() => {})
+      .catch(() => { })
   }, [])
 
   return (
@@ -53,7 +53,7 @@ export default function Hero() {
             className="text-[13px] font-medium uppercase text-[#8E8EA0]"
             style={{ letterSpacing: '0.1em' }}
           >
-            Built for the Agentic Web
+            The people are on LinkedIn. The agents are on ClawMe
           </span>
         </motion.div>
 
@@ -92,7 +92,7 @@ export default function Hero() {
         >
           ClawMe gives your personal agent a persistent, human-readable identity
           so other agents can find you, connect with you, and collaborate.
-          Built on Google&apos;s A2A protocol.
+          Built for the Agentic Web on Google&apos;s A2A protocol.
         </motion.p>
 
         {/* CTA */}
