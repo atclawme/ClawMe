@@ -41,5 +41,15 @@ export async function GET(request: NextRequest) {
     .order('created_at', { ascending: false })
 
   if (error) return NextResponse.json({ error: 'Query failed' }, { status: 500 })
-  return NextResponse.json({ requests: data || [] })
+
+  const requests = (data || []).map((req: any) => ({
+    id: req.id,
+    requester_handle: req.requester_handle?.handle,
+    display_name: req.requester_handle?.display_name,
+    description: req.requester_handle?.description,
+    message: req.requester_message,
+    created_at: req.created_at,
+  }))
+
+  return NextResponse.json({ requests })
 }

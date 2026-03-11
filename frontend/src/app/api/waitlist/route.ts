@@ -1,26 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { store } from '@/lib/mock-store'
-import { HANDLE_REGEX, RESERVED_HANDLES, validateEmail } from '@/lib/validations'
+import { waitlistSchema } from '@/lib/validations'
 import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-server'
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}))
-  const { email, desired_handle, source } = body
+  const result = waitlistSchema.safeParse(body)
 
-  if (!validateEmail(email)) {
-    return NextResponse.json({ error: 'Invalid email format' }, { status: 422 })
+  if (!result.success) {
+    return NextResponse.json({ 
+      error: 'validation_failed', 
+      details: result.error.errors.map(e => ({ path: e.path, message: e.message })) 
+    }, { status: 422 })
   }
 
-  let handle: string | null = null
-  if (desired_handle) {
-    handle = String(desired_handle).toLowerCase().trim()
-    if (!HANDLE_REGEX.test(handle)) {
-      return NextResponse.json({ error: 'Invalid handle format' }, { status: 422 })
-    }
-    if (RESERVED_HANDLES.has(handle)) {
-      return NextResponse.json({ error: 'Handle is reserved' }, { status: 422 })
-    }
-  }
+  const { email, desired_handle, source } = result.data
+  const handle = desired_handle || null
 
   if (!SUPABASE_CONFIGURED) {
     if (store.waitlistByEmail.has(email)) {

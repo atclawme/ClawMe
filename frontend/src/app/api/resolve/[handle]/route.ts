@@ -3,7 +3,7 @@ import { getUser } from '@/lib/auth'
 import { getRequesterTier, buildA2ACard } from '@/lib/resolver'
 import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-server'
 import { store } from '@/lib/mock-store'
-import { HANDLE_REGEX } from '@/lib/validations'
+import { handleSchema } from '@/lib/validations'
 
 export async function GET(
   request: NextRequest,
@@ -12,7 +12,8 @@ export async function GET(
   const { handle: rawHandle } = await params
   const handle = rawHandle.replace('@', '').toLowerCase().trim()
 
-  if (!HANDLE_REGEX.test(handle)) {
+  const result = handleSchema.safeParse(handle)
+  if (!result.success) {
     return NextResponse.json({ error: 'Invalid handle format' }, { status: 422 })
   }
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth, getUserHandle } from '@/lib/auth'
 import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-server'
 import { store } from '@/lib/mock-store'
+import { resolveConnectionSchema } from '@/lib/validations'
 
 export async function PATCH(
   request: NextRequest,
@@ -13,11 +14,16 @@ export async function PATCH(
   const { user } = auth
   const { id } = await params
   const body = await request.json().catch(() => ({}))
-  const { status } = body
+  const result = resolveConnectionSchema.safeParse(body)
 
-  if (!['approved', 'rejected', 'blocked'].includes(status)) {
-    return NextResponse.json({ error: 'Invalid status' }, { status: 422 })
+  if (!result.success) {
+    return NextResponse.json({ 
+      error: 'validation_failed', 
+      details: result.error.errors.map(e => ({ path: e.path, message: e.message })) 
+    }, { status: 422 })
   }
+
+  const { status } = result.data
 
   const myHandle = await getUserHandle(user.id)
   if (!myHandle) return NextResponse.json({ error: 'No handle found' }, { status: 404 })

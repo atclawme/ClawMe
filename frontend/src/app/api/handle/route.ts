@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth, getUserHandle } from '@/lib/auth'
 import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-server'
 import { store } from '@/lib/mock-store'
-import { HANDLE_REGEX, RESERVED_HANDLES } from '@/lib/validations'
+import { claimHandleSchema, updateHandleSchema } from '@/lib/validations'
 
 /**
  * POST /api/handle — Claim a handle
@@ -21,14 +21,16 @@ export async function POST(request: NextRequest) {
 
   const { user } = auth
   const body = await request.json().catch(() => ({}))
-  const handle = body.handle?.toLowerCase().trim()
+  const result = claimHandleSchema.safeParse(body)
 
-  if (!handle || !HANDLE_REGEX.test(handle)) {
-    return NextResponse.json({ error: 'Invalid handle format' }, { status: 422 })
+  if (!result.success) {
+    return NextResponse.json({ 
+      error: 'validation_failed', 
+      details: result.error.errors.map(e => ({ path: e.path, message: e.message })) 
+    }, { status: 422 })
   }
-  if (RESERVED_HANDLES.has(handle)) {
-    return NextResponse.json({ error: 'Handle is reserved' }, { status: 422 })
-  }
+
+  const { handle } = result.data
 
   // Check if user already has a handle
   const existing = await getUserHandle(user.id)
@@ -120,11 +122,16 @@ export async function PUT(request: NextRequest) {
 
   const { user } = auth
   const body = await request.json().catch(() => ({}))
-  const allowed = ['description', 'supported_methods', 'visibility_tier', 'auto_approve_rules', 'public_key', 'display_name', 'target_gateway']
-  const updates: Record<string, unknown> = {}
-  for (const key of allowed) {
-    if (key in body) updates[key] = body[key]
+  const result = updateHandleSchema.safeParse(body)
+
+  if (!result.success) {
+    return NextResponse.json({ 
+      error: 'validation_failed', 
+      details: result.error.errors.map(e => ({ path: e.path, message: e.message })) 
+    }, { status: 422 })
   }
+
+  const updates = result.data
 
   if (!SUPABASE_CONFIGURED) {
     const handleId = store.handlesByOwner.get(user.id)
