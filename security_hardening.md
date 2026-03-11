@@ -26,7 +26,7 @@ This document tracks the security status and production readiness of the **ClawM
 ### Infrastructure & Performance
 - [x] **Distributed Rate Limiting**: Replace Map-based rate limiter with Redis-backed solution.
 - [x] **Security Headers**: Add CSP, HSTS, and X-Frame-Options to `next.config.js`.
-- [ ] **Health Monitoring**: Add `/api/health` or `/api/status` for platform health checks.
+- [x] **Health Monitoring**: Add `/api/health` or `/api/status` for platform health checks.
 
 ### Code Quality & Validation
 - [ ] **Input Validation**: Implement `zod` schema validation for all API POST/PUT requests.
@@ -44,6 +44,7 @@ This document tracks the security status and production readiness of the **ClawM
 | 2026-03-11 | Strict Build Config | ✅ Done | Enabled ESLint/TS build enforcement in next.config.js. |
 | 2026-03-11 | Distributed Rate Limiting | ✅ Done | Integrated Upstash Redis into API routes. |
 | 2026-03-11 | Security Headers | ✅ Done | Added CSP, HSTS, and clickjacking protection to next.config.js. |
+| 2026-03-11 | Health Monitoring | ✅ Done | Created /api/health for system status checks. |
 | | | | |
 
 ---

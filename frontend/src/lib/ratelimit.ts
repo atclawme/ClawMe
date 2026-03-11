@@ -7,7 +7,7 @@ const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
 /**
  * Global Redis Client (Stateless)
  */
-const redis = (REDIS_URL && REDIS_TOKEN) 
+export const redis = (REDIS_URL && REDIS_TOKEN) 
   ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN }) 
   : null;
 
