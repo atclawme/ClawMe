@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, Loader2, CheckCircle2, XCircle } from 'lucide-react'
 import { validateHandle } from '@/lib/validations'
 
-type AvailabilityStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid'
+type AvailabilityStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid' | 'rate_limited'
 
 export default function WaitlistForm() {
   const [handle, setHandle] = useState('')
@@ -36,6 +36,10 @@ export default function WaitlistForm() {
     setHandleError('')
     try {
       const res = await fetch(`/api/waitlist/check?handle=${encodeURIComponent(value)}`)
+      if (res.status === 429) {
+        setAvailability('rate_limited')
+        return
+      }
       const data = await res.json()
       setAvailability(data.available ? 'available' : 'taken')
     } catch {
@@ -46,7 +50,7 @@ export default function WaitlistForm() {
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
     if (handle) {
-      debounceRef.current = setTimeout(() => checkAvailability(handle), 300)
+      debounceRef.current = setTimeout(() => checkAvailability(handle), 600)
     } else {
       setAvailability('idle')
       setHandleError('')
@@ -114,6 +118,7 @@ export default function WaitlistForm() {
     loading ||
     availability === 'taken' ||
     availability === 'invalid' ||
+    availability === 'rate_limited' ||
     (handle !== '' && availability === 'checking')
 
   const borderColor = () => {
@@ -274,6 +279,19 @@ export default function WaitlistForm() {
                         style={{ backgroundColor: '#EF4444' }}
                       />
                       @{handle} is taken
+                    </p>
+                  )}
+                  {availability === 'rate_limited' && (
+                    <p
+                      className="text-[13px] flex items-center gap-1.5"
+                      style={{ color: '#F59E0B' }}
+                      data-testid="handle-rate-limited-msg"
+                    >
+                      <span
+                        className="w-1.5 h-1.5 rounded-full inline-block flex-shrink-0"
+                        style={{ backgroundColor: '#F59E0B' }}
+                      />
+                      Too many checks — wait a moment
                     </p>
                   )}
                   {availability === 'invalid' && handleError && (

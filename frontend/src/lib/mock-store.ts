@@ -63,7 +63,9 @@ if (!global.__clawStore) {
 
 export const store = global.__clawStore
 
-export function checkRateLimit(ip: string, maxReq = 10, windowMs = 60000): boolean {
+const RATE_LIMIT_MAX_REQUESTS = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '60', 10)
+
+export function checkRateLimit(ip: string, maxReq = RATE_LIMIT_MAX_REQUESTS, windowMs = 60000): boolean {
   const now = Date.now()
   const requests = (store.rateLimits.get(ip) || []).filter((t) => now - t < windowMs)
   if (requests.length >= maxReq) return false
