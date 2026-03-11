@@ -8,10 +8,15 @@ interface Node {
   vx: number
   vy: number
   radius: number
+  spawnTime: number
 }
 
 const NODE_COUNT = 32
 const CONNECTION_DISTANCE = 280
+const SPAWN_INTERVAL = 350 // ms between new nodes
+const APPEAR_DURATION = 1200 // ms for a node to fade in
+const EDGE_GROWTH_DURATION = 800 // ms for a line to grow between nodes
+const INITIAL_NODES = 6 // nodes to show immediately
 
 const BOT_SVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="rgba(113, 113, 122, 0.9)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -51,23 +56,32 @@ export default function NetworkBackground() {
     resize()
     window.addEventListener('resize', resize)
 
-    const nodes: Node[] = Array.from({ length: NODE_COUNT }, () => ({
+    const startTime = Date.now()
+
+    const nodes: Node[] = Array.from({ length: NODE_COUNT }, (_, i) => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      vx: (Math.random() - 0.5) * 0.15, 
+      vx: (Math.random() - 0.5) * 0.15,
       vy: (Math.random() - 0.5) * 0.15,
       radius: 14,
+      spawnTime: i < INITIAL_NODES ? 0 : (i - INITIAL_NODES) * SPAWN_INTERVAL,
     }))
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       
+      const currentTime = Date.now() - startTime
+
       // Reset alpha for edges
       ctx.globalAlpha = 1.0
 
       // Collision Detection and Resolution (Prevent Overlap)
       for (let i = 0; i < nodes.length; i++) {
+        if (currentTime < nodes[i].spawnTime) continue
+        
         for (let j = i + 1; j < nodes.length; j++) {
+          if (currentTime < nodes[j].spawnTime) continue
+
           const dx = nodes[j].x - nodes[i].x
           const dy = nodes[j].y - nodes[i].y
           const dist = Math.sqrt(dx * dx + dy * dy)
@@ -75,7 +89,6 @@ export default function NetworkBackground() {
 
           if (dist < minDist) {
             // Simple elastic collision (swap velocities or bounce)
-            // Just swap them for now to simulate a realistic drift change
             const tempVx = nodes[i].vx
             const tempVy = nodes[i].vy
             nodes[i].vx = nodes[j].vx
@@ -98,25 +111,38 @@ export default function NetworkBackground() {
       // Draw edges
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
+          const edgeStartTime = Math.max(nodes[i].spawnTime, nodes[j].spawnTime)
+          const timeSinceEdgeSpawn = currentTime - edgeStartTime
+          
+          if (timeSinceEdgeSpawn < 0) continue
+
           const dx = nodes[j].x - nodes[i].x
           const dy = nodes[j].y - nodes[i].y
           const dist = Math.sqrt(dx * dx + dy * dy)
           
           if (dist < CONNECTION_DISTANCE && dist > (nodes[i].radius + nodes[j].radius)) {
-            // Dialed down opacity by ~10% (0.45 -> 0.40)
+            const growth = Math.min(1, timeSinceEdgeSpawn / EDGE_GROWTH_DURATION)
             const edgeAlpha = (1 - dist / CONNECTION_DISTANCE) * 0.40
             
-            const angle = Math.atan2(dy, dx)
-            const startX = nodes[i].x + Math.cos(angle) * nodes[i].radius
-            const startY = nodes[i].y + Math.sin(angle) * nodes[i].radius
-            const endX = nodes[j].x - Math.cos(angle) * nodes[j].radius
-            const endY = nodes[j].y - Math.sin(angle) * nodes[j].radius
+            // Grow from the older node to the newer node
+            const fromNode = nodes[i].spawnTime <= nodes[j].spawnTime ? nodes[i] : nodes[j]
+            const toNode = nodes[i].spawnTime <= nodes[j].spawnTime ? nodes[j] : nodes[i]
+
+            const angle = Math.atan2(toNode.y - fromNode.y, toNode.x - fromNode.x)
+            const startX = fromNode.x + Math.cos(angle) * fromNode.radius
+            const startY = fromNode.y + Math.sin(angle) * fromNode.radius
+            
+            const fullTargetX = toNode.x - Math.cos(angle) * toNode.radius
+            const fullTargetY = toNode.y - Math.sin(angle) * toNode.radius
+
+            const currentEndX = startX + (fullTargetX - startX) * growth
+            const currentEndY = startY + (fullTargetY - startY) * growth
 
             ctx.beginPath()
             ctx.strokeStyle = `rgba(255, 255, 255, ${edgeAlpha})`
             ctx.lineWidth = 1.6
             ctx.moveTo(startX, startY)
-            ctx.lineTo(endX, endY)
+            ctx.lineTo(currentEndX, currentEndY)
             ctx.stroke()
           }
         }
@@ -124,9 +150,21 @@ export default function NetworkBackground() {
 
       // Draw nodes
       nodes.forEach((node) => {
+        const timeSinceSpawn = currentTime - node.spawnTime
+        if (timeSinceSpawn < 0) return
+
+        const nodeOpacity = Math.min(1, timeSinceSpawn / APPEAR_DURATION)
+
+        // Draw background circle mask to hide edges crossing behind this icon
+        ctx.beginPath()
+        ctx.arc(node.x, node.y, node.radius + 2, 0, Math.PI * 2)
+        ctx.fillStyle = '#0A0A0F'
+        ctx.globalAlpha = nodeOpacity
+        ctx.fill()
+
         if (iconRef.current?.complete) {
           const size = node.radius * 2
-          ctx.globalAlpha = 0.4 
+          ctx.globalAlpha = 0.4 * nodeOpacity
           ctx.drawImage(
             iconRef.current!,
             node.x - node.radius,
@@ -137,6 +175,7 @@ export default function NetworkBackground() {
         }
         
         // Move
+        ctx.globalAlpha = 1.0 // Reset alpha for movement logic if needed (redundant but safe)
         node.x += node.vx
         node.y += node.vy
 
