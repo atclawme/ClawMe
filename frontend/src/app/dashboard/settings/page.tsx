@@ -27,7 +27,7 @@ export default function SettingsPage() {
   const [customMethod, setCustomMethod] = useState('')
   const [gatewayUrl, setGatewayUrl] = useState('')
   const [publicKey, setPublicKey] = useState('')
-  const [visibilityTier, setVisibilityTier] = useState(1)
+  const [visibilityTier, setVisibilityTier] = useState(3)
   const [autoApproveVerified, setAutoApproveVerified] = useState(false)
   const [gatewayWarning, setGatewayWarning] = useState('')
   const [deleteConfirm, setDeleteConfirm] = useState('')
@@ -46,7 +46,7 @@ export default function SettingsPage() {
         setMethods(data.supported_methods || [])
         setGatewayUrl(data.target_gateway || '')
         setPublicKey(data.public_key || '')
-        setVisibilityTier(data.visibility_tier || 1)
+        setVisibilityTier(data.visibility_tier || 3)
         const rules = data.auto_approve_rules as Record<string, unknown> || {}
         setAutoApproveVerified(Boolean(rules.verified_only))
       }

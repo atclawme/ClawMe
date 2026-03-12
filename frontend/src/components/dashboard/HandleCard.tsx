@@ -21,7 +21,7 @@ export default function HandleCard({ handle }: { handle: HandleData | null }) {
     )
   }
 
-  const visibility = VISIBILITY_TIERS[handle.visibility_tier] || VISIBILITY_TIERS[1]
+  const visibility = VISIBILITY_TIERS[handle.visibility_tier] || VISIBILITY_TIERS[3]
 
   return (
     <Card

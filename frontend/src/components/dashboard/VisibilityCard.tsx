@@ -11,7 +11,7 @@ const TIERS: Record<number, { label: string; desc: string }> = {
 export default function VisibilityCard({ handle }: { handle: HandleData | null }) {
   if (!handle) return null
 
-  const tier = TIERS[handle.visibility_tier] || TIERS[1]
+  const tier = TIERS[handle.visibility_tier] || TIERS[3]
 
   return (
     <Card

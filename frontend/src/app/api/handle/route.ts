@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       id,
       handle,
       owner_id: user.id,
-      visibility_tier: 1,
+      visibility_tier: 3,
       trust_score: 0,
       created_at: new Date().toISOString(),
     }
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
   // Create the handle
   const { data, error } = await supabase
     .from('handles')
-    .insert({ handle, owner_id: user.id, visibility_tier: 1, trust_score: 0 })
+    .insert({ handle, owner_id: user.id, visibility_tier: 3, trust_score: 0 })
     .select()
     .single()
 

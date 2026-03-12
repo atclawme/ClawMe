@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
           .insert({
             handle: reservedHandle,
             owner_id: user.id,
-            visibility_tier: 1,
+            visibility_tier: 3,
             trust_score: 0,
           })
 
