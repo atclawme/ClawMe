@@ -2,7 +2,7 @@ export default function Footer() {
   return (
     <footer
       className="py-12 px-6"
-      style={{ borderTop: '1px solid #27272F' }}
+      style={{ borderTop: '1px solid #000000' }}
       data-testid="footer"
     >
       <div
