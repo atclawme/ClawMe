@@ -79,25 +79,32 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0F]">
-        <Loader2 className="w-6 h-6 animate-spin text-[#6C47FF]" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0F] flex">
+    <div className="flex min-h-screen bg-background">
       <Sidebar />
-      <main className="flex-1 md:ml-[240px] p-6 pt-[60px] md:pt-6">
-        <div className="max-w-[1000px] mx-auto">
-          <div className="mb-8">
-            <h1 className="text-[24px] font-bold text-[#F0F0F5]" style={{ letterSpacing: '-0.01em' }}>
+      <main className="flex-1 md:ml-60 p-6 pt-[60px] md:pt-6">
+        <div className="mx-auto max-w-[1000px] space-y-6">
+          <div className="flex flex-col gap-1">
+            <h1
+              className="text-[24px] font-semibold tracking-tight text-foreground"
+              style={{ letterSpacing: '-0.02em' }}
+            >
               Dashboard
             </h1>
-            {userEmail && <p className="text-[13px] text-[#52525B] mt-1">{userEmail}</p>}
+            {userEmail && (
+              <p className="text-[13px] text-muted-foreground">
+                Signed in as <span className="font-medium">{userEmail}</span>
+              </p>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <HandleCard handle={handleData} />
             <AgentStatusCard handle={handleData} />
             <ConnectionsCard

@@ -1,5 +1,6 @@
 import TunnelWarning from './TunnelWarning'
 import type { HandleData } from '@/app/dashboard/page'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 function getStatus(lastHeartbeat?: string): { label: string; color: string } {
   if (!lastHeartbeat) return { label: 'Offline', color: '#EF4444' }
@@ -25,40 +26,52 @@ export default function AgentStatusCard({ handle }: { handle: HandleData | null 
     handle.target_gateway.startsWith('http://')
 
   return (
-    <div className="rounded-xl p-6" style={{ backgroundColor: '#13131A', border: '1px solid #27272F' }} data-testid="agent-status-card">
-      <p className="text-[13px] font-medium uppercase text-[#8E8EA0] mb-4" style={{ letterSpacing: '0.05em' }}>
-        Agent Status
-      </p>
+    <Card
+      data-testid="agent-status-card"
+      className="bg-gradient-to-b from-background/80 to-background/40 border-border/80 shadow-lg shadow-primary/5"
+    >
+      <CardHeader className="pb-3">
+        <CardTitle className="text-[11px] font-medium uppercase tracking-[0.25em] text-muted-foreground">
+          Agent Status
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0 space-y-4">
+        {showTunnelWarning && <TunnelWarning />}
 
-      {showTunnelWarning && <TunnelWarning />}
+        <div className="space-y-4">
+          <div>
+            <p className="text-[11px] uppercase text-muted-foreground mb-1 tracking-[0.2em]">Gateway URL</p>
+            <p
+              className="text-[13px] break-all"
+              style={{
+                fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace',
+              }}
+              data-testid="gateway-url-display"
+            >
+              {handle.target_gateway || 'Not configured'}
+            </p>
+          </div>
 
-      <div className="space-y-4">
-        <div>
-          <p className="text-[12px] uppercase text-[#52525B] mb-1" style={{ letterSpacing: '0.05em' }}>Gateway URL</p>
-          <p
-            className="text-[14px] break-all"
-            style={{
-              fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace',
-              color: handle.target_gateway ? '#F0F0F5' : '#52525B',
-            }}
-            data-testid="gateway-url-display"
-          >
-            {handle.target_gateway || 'Not configured'}
-          </p>
+          <div>
+            <p className="text-[11px] uppercase text-muted-foreground mb-1 tracking-[0.2em]">Last heartbeat</p>
+            <p className="text-[13px] text-muted-foreground">{formatTs(handle.last_heartbeat)}</p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span
+              className="w-2 h-2 rounded-full flex-shrink-0"
+              style={{ backgroundColor: status.color }}
+            />
+            <span
+              className="text-[14px] font-medium"
+              style={{ color: status.color }}
+              data-testid="agent-status-label"
+            >
+              {status.label}
+            </span>
+          </div>
         </div>
-
-        <div>
-          <p className="text-[12px] uppercase text-[#52525B] mb-1" style={{ letterSpacing: '0.05em' }}>Last heartbeat</p>
-          <p className="text-[14px] text-[#8E8EA0]">{formatTs(handle.last_heartbeat)}</p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: status.color }} />
-          <span className="text-[14px] font-medium" style={{ color: status.color }} data-testid="agent-status-label">
-            {status.label}
-          </span>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

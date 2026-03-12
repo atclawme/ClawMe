@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import PendingRequestItem from './PendingRequestItem'
 import type { HandleData, PendingRequest } from '@/app/dashboard/page'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 export default function ConnectionsCard({
   handle,
@@ -17,44 +19,49 @@ export default function ConnectionsCard({
   const overflow = pendingRequests.length - 3
 
   return (
-    <div className="rounded-xl p-6" style={{ backgroundColor: '#13131A', border: '1px solid #27272F' }} data-testid="connections-card">
-      <p className="text-[13px] font-medium uppercase text-[#8E8EA0] mb-4" style={{ letterSpacing: '0.05em' }}>
-        Connections
-      </p>
-
-      <div className="flex items-center gap-4 mb-5">
-        <div>
-          <p className="text-[28px] font-bold text-[#F0F0F5]">{approvedCount}</p>
-          <p className="text-[12px] text-[#52525B]">Approved</p>
-        </div>
-        {pendingRequests.length > 0 && (
+    <Card
+      data-testid="connections-card"
+      className="bg-gradient-to-b from-background/80 to-background/40 border-border/80 shadow-lg shadow-primary/5"
+    >
+      <CardHeader className="pb-3">
+        <CardTitle className="text-[11px] font-medium uppercase tracking-[0.25em] text-muted-foreground">
+          Connections
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="pt-0 space-y-4">
+        <div className="flex items-center gap-4">
           <div>
-            <span
-              className="inline-flex items-center justify-center w-7 h-7 rounded-full text-[13px] font-bold text-white"
-              style={{ backgroundColor: '#6C47FF' }}
-              data-testid="pending-count-badge"
-            >
-              {pendingRequests.length}
-            </span>
-            <p className="text-[12px] text-[#52525B] mt-1">Pending</p>
+            <p className="text-2xl font-semibold text-foreground">{approvedCount}</p>
+            <p className="text-[11px] text-muted-foreground uppercase tracking-[0.2em]">Approved</p>
           </div>
-        )}
-      </div>
-
-      {shown.length > 0 && (
-        <div className="space-y-3 mb-4">
-          {shown.map((req) => (
-            <PendingRequestItem key={req.id} request={req} onAction={onAction} />
-          ))}
-          {overflow > 0 && (
-            <p className="text-[13px] text-[#6C47FF] cursor-pointer">+{overflow} more requests</p>
+          {pendingRequests.length > 0 && (
+            <div className="space-y-1">
+              <Badge
+                data-testid="pending-count-badge"
+                className="h-7 w-7 rounded-full p-0 flex items-center justify-center text-[11px] font-bold bg-primary text-primary-foreground"
+              >
+                {pendingRequests.length}
+              </Badge>
+              <p className="text-[11px] text-muted-foreground uppercase tracking-[0.18em]">Pending</p>
+            </div>
           )}
         </div>
-      )}
 
-      {pendingRequests.length === 0 && (
-        <p className="text-[13px] text-[#52525B] mb-4">No pending requests</p>
-      )}
-    </div>
+        {shown.length > 0 && (
+          <div className="space-y-3">
+            {shown.map((req) => (
+              <PendingRequestItem key={req.id} request={req} onAction={onAction} />
+            ))}
+            {overflow > 0 && (
+              <p className="text-[12px] text-primary cursor-pointer">+{overflow} more requests</p>
+            )}
+          </div>
+        )}
+
+        {pendingRequests.length === 0 && (
+          <p className="text-[12px] text-muted-foreground">No pending requests</p>
+        )}
+      </CardContent>
+    </Card>
   )
 }
