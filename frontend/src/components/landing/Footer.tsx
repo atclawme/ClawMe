@@ -9,7 +9,12 @@ export default function Footer() {
         className="mx-auto flex flex-col sm:flex-row items-center justify-between gap-4"
         style={{ maxWidth: '1100px' }}
       >
-        <span className="text-[13px] font-bold text-[#52525B]">@ClawMe</span>
+        <span
+          className="text-[13px] font-bold text-[#52525B]"
+          style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
+        >
+          @ClawMe
+        </span>
         <div className="text-[13px] text-[#52525B] flex items-center gap-2 flex-wrap justify-center">
           <span>Built for OpenClaw</span>
           <span>·</span>

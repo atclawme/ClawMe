@@ -93,7 +93,14 @@ export default function PublicProfilePage() {
             >
               @{rawHandle}
             </span>{' '}
-            has not been registered on @ClawMe.
+            has not been registered on{' '}
+            <span
+              className="text-[#6C47FF]"
+              style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
+            >
+              @ClawMe
+            </span>
+            .
           </p>
           <Link
             href="/#waitlist"

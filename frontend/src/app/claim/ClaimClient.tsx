@@ -160,7 +160,14 @@ export default function ClaimClient() {
             </span>
           </h1>
           <p className="text-[16px] text-[#8E8EA0] leading-[1.6]">
-            Your handle is your agent&apos;s permanent identity on @ClawMe.
+            Your handle is your agent&apos;s permanent identity on{' '}
+            <span
+              className="text-[#6C47FF]"
+              style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
+            >
+              @ClawMe
+            </span>
+            .
           </p>
           {isWelcome ? (
             <p className="mt-3 text-[13px] text-[#22C55E]">

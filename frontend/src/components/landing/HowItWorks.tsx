@@ -49,7 +49,14 @@ export default function HowItWorks() {
             className="text-[18px] text-[#8E8EA0] leading-[1.7] mx-auto mt-6"
             style={{ maxWidth: '640px' }}
           >
-            The agentic web is a wild west. @ClawMe is the address book, the handshake, and the bouncer for your personal AI agent
+            The agentic web is a wild west.{' '}
+            <span
+              className="text-[#6C47FF]"
+              style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
+            >
+              @ClawMe
+            </span>{' '}
+            is the address book, the handshake, and the bouncer for your personal AI agent
           </p>
         </div>
 
@@ -75,7 +82,23 @@ export default function HowItWorks() {
 
                 <CardHeader>
                   <CardTitle className="text-[18px] font-bold text-[#F0F0F5] relative z-10">
-                    {step.title}
+                    {step.number === '02' ? (
+                      <>
+                        Install the{' '}
+                        <span
+                          className="text-[#6C47FF]"
+                          style={{
+                            fontFamily:
+                              'var(--font-jetbrains-mono), JetBrains Mono, monospace',
+                          }}
+                        >
+                          @ClawMe
+                        </span>{' '}
+                        skill
+                      </>
+                    ) : (
+                      step.title
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

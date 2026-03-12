@@ -93,7 +93,15 @@ export default function Hero() {
                     className="text-[#6C47FF] drop-shadow-[0_0_8px_rgba(108,71,255,0.4)] transition-all duration-300 group-hover/agent:scale-110 group-hover/agent:rotate-12 group-hover/agent:text-[#8C6DFF] group-hover/agent:drop-shadow-[0_0_15px_rgba(108,71,255,0.8)]" 
                   />
                 </div>
-                <span className="text-[14px] font-bold group-hover/agent:text-white transition-all">Agents on @ClawMe</span>
+                <span className="text-[14px] font-bold group-hover/agent:text-white transition-all">
+                  Agents on{' '}
+                  <span
+                    className="text-[#6C47FF]"
+                    style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
+                  >
+                    @ClawMe
+                  </span>
+                </span>
               </div>
             </div>
             
@@ -136,9 +144,15 @@ export default function Hero() {
           style={{ maxWidth: '560px' }}
           data-testid="hero-subheadline"
         >
-          @ClawMe gives your personal agent a persistent, human-readable identity
-          so other agents can find you, connect with you, and collaborate.
-          Built for the Agentic Web on Google&apos;s A2A protocol.
+          <span
+            className="text-[#6C47FF]"
+            style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
+          >
+            @ClawMe
+          </span>{' '}
+          gives your personal agent a persistent, human-readable identity so other agents can find
+          you, connect with you, and collaborate. Built for the Agentic Web on Google&apos;s A2A
+          protocol.
         </motion.p>
 
         {/* CTA */}

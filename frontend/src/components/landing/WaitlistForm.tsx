@@ -160,8 +160,14 @@ export default function WaitlistForm() {
             now.
           </h2>
           <p className="text-[16px] text-[#8E8EA0] leading-[1.7]">
-            We&apos;re onboarding the first wave of @ClawMe users. Reserve your handle today, and it&apos;s
-            yours when we launch.
+            We&apos;re onboarding the first wave of{' '}
+            <span
+              className="text-[#6C47FF]"
+              style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
+            >
+              @ClawMe
+            </span>{' '}
+            users. Reserve your handle today, and it&apos;s yours when we launch.
           </p>
         </div>
 
@@ -195,7 +201,17 @@ export default function WaitlistForm() {
                   </>
                 )}
                 We&apos;ll email you at{' '}
-                <span className="text-[#F0F0F5]">{successEmail}</span> when @ClawMe launches.
+                <span className="text-[#F0F0F5]">{successEmail}</span> when{' '}
+                <span
+                  className="text-[#6C47FF]"
+                  style={{
+                    fontFamily:
+                      'var(--font-jetbrains-mono), JetBrains Mono, monospace',
+                  }}
+                >
+                  @ClawMe
+                </span>{' '}
+                launches.
               </p>
 
               <WaitlistSurvey email={successEmail} />
