@@ -55,6 +55,7 @@ export async function getUserHandle(userId: string) {
     .from('handles')
     .select('*')
     .eq('owner_id', userId)
+    .eq('is_system', false)
     .single()
   return data
 }

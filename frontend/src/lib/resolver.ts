@@ -29,6 +29,7 @@ export async function getRequesterTier(
     .from('handles')
     .select('id')
     .eq('owner_id', requesterUserId)
+    .eq('is_system', false)
     .single()
 
   if (!requesterHandle) return 3

@@ -60,6 +60,7 @@ export async function GET(request: NextRequest) {
     .from('handles')
     .select('id')
     .eq('owner_id', user.id)
+    .eq('is_system', false)
     .maybeSingle()
 
   if (existingHandle) {

@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
     .from('handles')
     .update({ target_gateway: gateway, last_heartbeat: now })
     .eq('owner_id', user.id)
+    .eq('is_system', false)
 
   if (error) return apiError(500, 'update_failed', 'Update failed')
   return NextResponse.json({ success: true, last_heartbeat: now })

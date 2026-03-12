@@ -144,6 +144,7 @@ export async function PUT(request: NextRequest) {
     .from('handles')
     .update(updates)
     .eq('owner_id', user.id)
+    .eq('is_system', false)
     .select()
     .single()
 
