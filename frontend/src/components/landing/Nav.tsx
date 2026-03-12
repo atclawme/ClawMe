@@ -46,7 +46,7 @@ export default function Nav() {
         backgroundColor: 'rgba(10, 10, 15, 0.90)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        borderBottom: '1px solid #27272F',
+        borderBottom: '1px solid #000000',
       }}
     >
       <div
