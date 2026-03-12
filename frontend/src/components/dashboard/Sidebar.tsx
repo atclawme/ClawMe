@@ -10,6 +10,9 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
 } from '@/components/ui/sheet'
 
 const navItems = [
@@ -109,6 +112,10 @@ export default function Sidebar() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-60 p-0 border-r border-border/60 bg-background/95">
+            <SheetHeader className="sr-only">
+              <SheetTitle>Navigation</SheetTitle>
+              <SheetDescription>Main navigation</SheetDescription>
+            </SheetHeader>
             <NavContent />
           </SheetContent>
         </Sheet>

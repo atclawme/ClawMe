@@ -6,9 +6,9 @@ import Sidebar from '@/components/dashboard/Sidebar'
 import HandleCard from '@/components/dashboard/HandleCard'
 import AgentStatusCard from '@/components/dashboard/AgentStatusCard'
 import ConnectionsCard from '@/components/dashboard/ConnectionsCard'
-import VisibilityCard from '@/components/dashboard/VisibilityCard'
 import { createClient } from '@/lib/supabase'
 import { Loader2 } from 'lucide-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export type HandleData = {
   id: string
@@ -90,30 +90,38 @@ export default function DashboardPage() {
       <Sidebar />
       <main className="flex-1 md:ml-60 p-6 pt-[60px] md:pt-6">
         <div className="mx-auto max-w-[1000px] space-y-6">
-          <div className="flex flex-col gap-1">
-            <h1
-              className="text-[24px] font-semibold tracking-tight text-foreground"
-              style={{ letterSpacing: '-0.02em' }}
-            >
-              Dashboard
-            </h1>
-            {userEmail && (
-              <p className="text-[13px] text-muted-foreground">
-                Signed in as <span className="font-medium">{userEmail}</span>
-              </p>
-            )}
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <h1
+                className="text-[24px] font-semibold tracking-tight text-foreground"
+                style={{ letterSpacing: '-0.02em' }}
+              >
+                Dashboard
+              </h1>
+              {userEmail && (
+                <p className="text-[13px] text-muted-foreground">
+                  Signed in as <span className="font-medium">{userEmail}</span>
+                </p>
+              )}
+            </div>
+            <Alert className="border-primary/20 bg-primary/5 text-xs text-muted-foreground">
+              <AlertDescription>
+                ClawMe is in early access and some capabilities are still rolling out. Full functionality is coming soon.
+              </AlertDescription>
+            </Alert>
           </div>
 
           <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
             <HandleCard handle={handleData} />
             <AgentStatusCard handle={handleData} />
-            <ConnectionsCard
-              handle={handleData}
-              pendingRequests={pendingRequests}
-              approvedCount={approvedCount}
-              onAction={handleConnectionAction}
-            />
-            <VisibilityCard handle={handleData} />
+            <div className="lg:col-span-2">
+              <ConnectionsCard
+                handle={handleData}
+                pendingRequests={pendingRequests}
+                approvedCount={approvedCount}
+                onAction={handleConnectionAction}
+              />
+            </div>
           </div>
         </div>
       </main>
