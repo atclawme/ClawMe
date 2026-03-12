@@ -15,21 +15,23 @@ export default function Footer() {
         >
           @ClawMe
         </span>
-        <div className="text-[13px] text-[#52525B] flex items-center gap-2 flex-wrap justify-center">
+        <div className="text-[13px] text-[#52525B] flex items-center gap-2 flex-wrap justify-center sm:justify-end text-center sm:text-right">
+          <span>
+            Built with <span className="text-[#F97373]">♥</span> by{' '}
+            <a
+              href="https://github.com/prajwalkhairnar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#8E8EA0] hover:text-[#F0F0F5] transition-colors"
+              style={{ transitionDuration: '150ms' }}
+            >
+              @prajwalkhairnar
+            </a>
+          </span>
+          <span>·</span>
           <span>Built for OpenClaw</span>
           <span>·</span>
           <span>A2A Protocol</span>
-          <span>·</span>
-          <a
-            href="https://github.com/clawme"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#8E8EA0] hover:text-[#F0F0F5] transition-colors"
-            style={{ transitionDuration: '150ms' }}
-            data-testid="footer-github-link"
-          >
-            GitHub
-          </a>
         </div>
       </div>
     </footer>
