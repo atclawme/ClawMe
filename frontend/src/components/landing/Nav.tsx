@@ -3,6 +3,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient, SUPABASE_READY } from '@/lib/supabase'
+import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuLink,
+} from '@/components/ui/navigation-menu'
 
 export default function Nav() {
   const [user, setUser] = useState<{ id: string } | null | undefined>(undefined)
@@ -57,37 +63,49 @@ export default function Nav() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-3">
-          {user === undefined ? null : user ? (
-            <Link
-              href="/dashboard"
-              className="px-4 py-2 text-sm font-semibold rounded-lg text-white transition-colors"
-              style={{ backgroundColor: '#6C47FF', transitionDuration: '150ms' }}
-              data-testid="nav-dashboard-link"
-            >
-              Dashboard
-            </Link>
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="px-4 py-2 text-sm font-semibold border border-[#3F3F50] text-[#F0F0F5] rounded-lg hover:border-[#6C47FF] hover:text-[#6C47FF] transition-all"
-                style={{ transitionDuration: '150ms' }}
-                data-testid="nav-signin-link"
-              >
-                Sign in
-              </Link>
-              <button
-                onClick={scrollToWaitlist}
-                data-testid="nav-join-waitlist-btn"
-                className="px-4 py-2 text-sm font-semibold bg-[#6C47FF] text-white rounded-lg hover:bg-[#7C5CFF] transition-colors"
-                style={{ transitionDuration: '150ms' }}
-              >
-                Join Waitlist
-              </button>
-            </>
-          )}
-        </div>
+        <NavigationMenu className="flex-none">
+          <NavigationMenuList className="flex items-center gap-5">
+            {user === undefined ? null : user ? (
+              <NavigationMenuItem>
+                <NavigationMenuLink asChild>
+                  <Link
+                    href="/dashboard"
+                    data-testid="nav-dashboard-link"
+                    className="text-[14px] font-medium text-[#D1D1DC] hover:text-white transition-colors duration-150"
+                  >
+                    Dashboard
+                  </Link>
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            ) : (
+              <>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <Link
+                      href="/login"
+                      data-testid="nav-signin-link"
+                      className="text-[14px] font-medium text-[#A1A1B5] hover:text-white transition-colors duration-150"
+                    >
+                      Sign in
+                    </Link>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <NavigationMenuLink asChild>
+                    <button
+                      type="button"
+                      onClick={scrollToWaitlist}
+                      data-testid="nav-join-waitlist-btn"
+                      className="text-[14px] font-medium text-[#9F87FF] hover:text-[#6C47FF] transition-colors duration-150"
+                    >
+                      Join waitlist
+                    </button>
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              </>
+            )}
+          </NavigationMenuList>
+        </NavigationMenu>
       </div>
     </nav>
   )
