@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { SUPABASE_CONFIGURED, createServiceSupabase } from '@/lib/supabase-server'
+import { errToLogObject, logger } from '@/lib/logger'
 
 /**
  * GET /auth/callback
@@ -100,7 +101,7 @@ export async function GET(request: NextRequest) {
           // Successfully auto-claimed! Redirect to dashboard
           return NextResponse.redirect(`${origin}/dashboard?welcome=true`)
         } else {
-          console.error('[auth/callback] Error auto-claiming handle:', claimError)
+          logger.error({ err: errToLogObject(claimError) }, 'auth/callback: auto-claim failed')
         }
         // If claim failed (race condition?), fall through to /claim
       }

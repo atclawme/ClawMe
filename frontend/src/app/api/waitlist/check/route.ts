@@ -3,6 +3,7 @@ import { checkRateLimit } from '@/lib/ratelimit'
 import { store } from '@/lib/mock-store'
 import { HANDLE_REGEX, RESERVED_HANDLES } from '@/lib/validations'
 import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-server'
+import { apiError } from '@/lib/api-response'
 
 /**
  * GET /api/waitlist/check?handle=xxx&email=xxx
@@ -19,14 +20,14 @@ export async function GET(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown'
   const { success } = await checkRateLimit(ip)
   if (!success) {
-    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+    return apiError(429, 'rate_limited', 'Too many requests')
   }
 
   const handle = request.nextUrl.searchParams.get('handle')?.toLowerCase().trim() || ''
   const email = request.nextUrl.searchParams.get('email')?.toLowerCase().trim() || ''
 
   if (!HANDLE_REGEX.test(handle)) {
-    return NextResponse.json({ error: 'Invalid handle format' }, { status: 422 })
+    return apiError(422, 'invalid_handle', 'Invalid handle format')
   }
   
   // System reserved handles are never available

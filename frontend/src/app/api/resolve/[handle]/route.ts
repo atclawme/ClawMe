@@ -4,6 +4,7 @@ import { getRequesterTier, buildA2ACard } from '@/lib/resolver'
 import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-server'
 import { store } from '@/lib/mock-store'
 import { handleSchema } from '@/lib/validations'
+import { apiError } from '@/lib/api-response'
 
 export async function GET(
   request: NextRequest,
@@ -14,7 +15,7 @@ export async function GET(
 
   const result = handleSchema.safeParse(handle)
   if (!result.success) {
-    return NextResponse.json({ error: 'Invalid handle format' }, { status: 422 })
+    return apiError(422, 'invalid_handle', 'Invalid handle format')
   }
 
   // Get the auth user (optional for resolver)
@@ -39,7 +40,7 @@ export async function GET(
 
   if (!SUPABASE_CONFIGURED) {
     const handleId = store.handlesBySlug.get(handle)
-    if (!handleId) return NextResponse.json({ error: 'Handle not found' }, { status: 404 })
+    if (!handleId) return apiError(404, 'handle_not_found', 'Handle not found')
     handleData = store.handles.get(handleId) as Record<string, unknown> || null
   } else {
     const supabase = createServiceSupabase()
@@ -47,7 +48,7 @@ export async function GET(
     handleData = data
   }
 
-  if (!handleData) return NextResponse.json({ error: 'Handle not found' }, { status: 404 })
+  if (!handleData) return apiError(404, 'handle_not_found', 'Handle not found')
 
   const tier = await getRequesterTier(userId, String(handleData.id))
   const card = buildA2ACard(handleData, tier)

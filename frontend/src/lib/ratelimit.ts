@@ -1,5 +1,6 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
+import { errToLogObject, logger } from "./logger";
 
 const REDIS_URL = process.env.UPSTASH_REDIS_REST_URL;
 const REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -40,7 +41,7 @@ export async function checkRateLimit(ip: string): Promise<{ success: boolean; li
         reset: result.reset,
       };
     } catch (error) {
-      console.error("[RateLimit] Redis error, falling back to permissive:", error);
+      logger.error({ err: errToLogObject(error) }, "ratelimit: redis error (fail-open)");
       return { success: true }; // Fail open in production if Redis is down
     }
   }

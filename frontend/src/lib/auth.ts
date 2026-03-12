@@ -1,6 +1,6 @@
 import { createServerSupabase, createServiceSupabase, SUPABASE_CONFIGURED } from './supabase-server'
-import { NextResponse } from 'next/server'
 import { store, MOCK_USER_ID } from './mock-store'
+import { apiError } from './api-response'
 
 export async function getUser() {
   if (!SUPABASE_CONFIGURED) return { id: MOCK_USER_ID, email: 'dev@mock.local' }
@@ -39,7 +39,7 @@ export async function requireAuth(request?: Request) {
     : await getUser()
 
   if (!user) {
-    return { error: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) }
+    return { error: apiError(401, 'unauthorized', 'Unauthorized') }
   }
   return { user }
 }

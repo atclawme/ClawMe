@@ -9,10 +9,9 @@ const API = `${BACKEND_URL}/api`;
 const Home = () => {
   const helloWorldApi = async () => {
     try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
+      await axios.get(`${API}/`);
     } catch (e) {
-      console.error(e, `errored out requesting / api`);
+      // Intentionally ignore in production UI; this file is legacy/unused in Next runtime.
     }
   };
 

@@ -32,10 +32,12 @@ export default function WaitlistSurvey({ email }: WaitlistSurveyProps) {
   const [otherDetails, setOtherDetails] = useState('')
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const handleSubmit = async () => {
     if (!source) return
     setLoading(true)
+    setSubmitError(null)
     try {
       const res = await fetch('/api/waitlist/referral', {
         method: 'POST',
@@ -48,9 +50,11 @@ export default function WaitlistSurvey({ email }: WaitlistSurveyProps) {
       })
       if (res.ok) {
         setSubmitted(true)
+      } else {
+        setSubmitError('Failed to submit. Please try again.')
       }
     } catch (err) {
-      console.error('Failed to submit survey', err)
+      setSubmitError('Failed to submit. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -124,6 +128,9 @@ export default function WaitlistSurvey({ email }: WaitlistSurveyProps) {
                   {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                   Submit
                 </Button>
+                {submitError ? (
+                  <p className="mt-3 text-[13px] text-red-400">{submitError}</p>
+                ) : null}
                 <button
                   onClick={() => setSubmitted(true)}
                   className="block mx-auto mt-4 text-[13px] text-[#52525B] hover:text-[#8E8EA0] transition-colors"

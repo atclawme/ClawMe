@@ -2,16 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { store } from '@/lib/mock-store'
 import { waitlistSchema } from '@/lib/validations'
 import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-server'
+import { apiError, apiValidationError } from '@/lib/api-response'
 
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}))
   const result = waitlistSchema.safeParse(body)
 
   if (!result.success) {
-    return NextResponse.json({ 
-      error: 'validation_failed', 
-      details: result.error.errors.map(e => ({ path: e.path, message: e.message })) 
-    }, { status: 422 })
+    return apiValidationError(result.error)
   }
 
   const { email, desired_handle, source } = result.data
@@ -19,10 +17,10 @@ export async function POST(request: NextRequest) {
 
   if (!SUPABASE_CONFIGURED) {
     if (store.waitlistByEmail.has(email)) {
-      return NextResponse.json({ error: 'already_registered' }, { status: 409 })
+      return apiError(409, 'already_registered', 'Already registered')
     }
     if (handle && store.waitlistByHandle.has(handle)) {
-      return NextResponse.json({ error: 'handle_taken' }, { status: 409 })
+      return apiError(409, 'handle_taken', 'Handle is already taken')
     }
     const id = crypto.randomUUID()
     store.waitlist.set(id, { id, email, desired_handle: handle || undefined, source: source || 'landing_page', created_at: new Date().toISOString() })
@@ -39,11 +37,11 @@ export async function POST(request: NextRequest) {
   if (error) {
     if (error.code === '23505') {
       if (error.details?.includes('desired_handle') || error.message?.includes('desired_handle')) {
-        return NextResponse.json({ error: 'handle_taken' }, { status: 409 })
+        return apiError(409, 'handle_taken', 'Handle is already taken')
       }
-      return NextResponse.json({ error: 'already_registered' }, { status: 409 })
+      return apiError(409, 'already_registered', 'Already registered')
     }
-    return NextResponse.json({ error: 'Database error' }, { status: 500 })
+    return apiError(500, 'database_error', 'Database error')
   }
   return NextResponse.json({ success: true, handle }, { status: 201 })
 }

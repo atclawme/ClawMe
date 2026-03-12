@@ -3,6 +3,7 @@ import { requireAuth, getUserHandle } from '@/lib/auth'
 import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-server'
 import { store } from '@/lib/mock-store'
 import { connectionRequestSchema } from '@/lib/validations'
+import { apiError, apiValidationError } from '@/lib/api-response'
 
 export async function POST(request: NextRequest) {
   const auth = await requireAuth(request)
@@ -13,27 +14,30 @@ export async function POST(request: NextRequest) {
   const result = connectionRequestSchema.safeParse(body)
 
   if (!result.success) {
-    return NextResponse.json({ 
-      error: 'validation_failed', 
-      details: result.error.errors.map(e => ({ path: e.path, message: e.message })) 
-    }, { status: 422 })
+    return apiValidationError(result.error)
   }
 
   const { target_handle, message } = result.data
 
   const requesterHandle = await getUserHandle(user.id)
   if (!requesterHandle) {
-    return NextResponse.json({ error: 'You need a handle to send connection requests' }, { status: 400 })
+    return apiError(
+      400,
+      'handle_required',
+      'You need a handle to send connection requests'
+    )
   }
 
   // Prevent self-requests even if UI is bypassed.
   if (requesterHandle.handle?.toLowerCase?.().trim?.() === target_handle.toLowerCase().trim()) {
-    return NextResponse.json({ error: 'Cannot request connection to yourself' }, { status: 400 })
+    return apiError(400, 'self_request_forbidden', 'Cannot request connection to yourself')
   }
 
   if (!SUPABASE_CONFIGURED) {
     const targetHandleId = store.handlesBySlug.get(target_handle.toLowerCase())
-    if (!targetHandleId) return NextResponse.json({ error: 'Target handle not found' }, { status: 404 })
+    if (!targetHandleId) {
+      return apiError(404, 'target_handle_not_found', 'Target handle not found')
+    }
 
     // Check for existing connection
     for (const conn of store.connections.values()) {
@@ -42,7 +46,7 @@ export async function POST(request: NextRequest) {
         conn.target_handle_id === targetHandleId &&
         (conn.status === 'pending' || conn.status === 'approved')
       ) {
-        return NextResponse.json({ error: 'Connection already exists' }, { status: 409 })
+        return apiError(409, 'connection_exists', 'Connection already exists')
       }
     }
 
@@ -63,7 +67,7 @@ export async function POST(request: NextRequest) {
   const { data: targetHandle } = await supabase
     .from('handles').select('id').eq('handle', target_handle.toLowerCase()).single()
 
-  if (!targetHandle) return NextResponse.json({ error: 'Target handle not found' }, { status: 404 })
+  if (!targetHandle) return apiError(404, 'target_handle_not_found', 'Target handle not found')
 
   const { data: existing } = await supabase
     .from('connections').select('id')
@@ -72,7 +76,7 @@ export async function POST(request: NextRequest) {
     .in('status', ['pending', 'approved'])
     .maybeSingle()
 
-  if (existing) return NextResponse.json({ error: 'Connection already exists' }, { status: 409 })
+  if (existing) return apiError(409, 'connection_exists', 'Connection already exists')
 
   const { data: conn, error } = await supabase.from('connections').insert({
     requester_handle_id: requesterHandle.id,
@@ -81,6 +85,6 @@ export async function POST(request: NextRequest) {
     requester_message: message || null,
   }).select('id').single()
 
-  if (error) return NextResponse.json({ error: 'Failed to create request' }, { status: 500 })
+  if (error) return apiError(500, 'connection_request_failed', 'Failed to create request')
   return NextResponse.json({ success: true, connection_id: conn.id }, { status: 201 })
 }

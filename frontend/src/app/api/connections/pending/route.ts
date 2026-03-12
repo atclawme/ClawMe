@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth, getUserHandle } from '@/lib/auth'
 import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-server'
 import { store } from '@/lib/mock-store'
+import { apiError } from '@/lib/api-response'
 
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request)
@@ -40,7 +41,7 @@ export async function GET(request: NextRequest) {
     .eq('status', 'pending')
     .order('created_at', { ascending: false })
 
-  if (error) return NextResponse.json({ error: 'Query failed' }, { status: 500 })
+  if (error) return apiError(500, 'query_failed', 'Query failed')
 
   const requests = (data || []).map((req: any) => ({
     id: req.id,

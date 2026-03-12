@@ -47,6 +47,9 @@ export async function getRequesterTier(
 }
 
 export function buildA2ACard(handle: Record<string, unknown>, tier: Tier) {
+  const targetGateway =
+    typeof handle.target_gateway === 'string' ? handle.target_gateway : null
+
   const base = {
     '@context': 'https://schema.org/extensions/a2a-v1.json',
     type: 'A2AAgent',
@@ -65,8 +68,8 @@ export function buildA2ACard(handle: Record<string, unknown>, tier: Tier) {
       ...base,
       endpoints: [
         {
-          protocol: handle.target_gateway?.startsWith('wss') ? 'wss' : 'https',
-          uri: handle.target_gateway,
+          protocol: targetGateway?.startsWith('wss') ? 'wss' : 'https',
+          uri: targetGateway || '',
           priority: 1,
           supportedMethods: handle.supported_methods || [],
         },

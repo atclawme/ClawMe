@@ -30,8 +30,8 @@ This document tracks the security status and production readiness of the **@Claw
 
 ### Code Quality & Validation
 - [x] **Input Validation**: Implement `zod` schema validation for all API POST/PUT requests.
-- [ ] **Logging**: Implement structured logging (e.g., `pino`) – remove all raw `console.log`.
-- [ ] **Error Handling**: Standardize API error responses across all routes.
+- [x] **Logging**: Implement structured logging (e.g., `pino`) – remove all raw `console.log`.
+- [x] **Error Handling**: Standardize API error responses across all routes.
 
 ---
 

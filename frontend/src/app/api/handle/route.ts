@@ -3,6 +3,7 @@ import { requireAuth, getUserHandle } from '@/lib/auth'
 import { createServiceSupabase, SUPABASE_CONFIGURED } from '@/lib/supabase-server'
 import { store } from '@/lib/mock-store'
 import { claimHandleSchema, updateHandleSchema } from '@/lib/validations'
+import { apiError, apiValidationError } from '@/lib/api-response'
 
 /**
  * POST /api/handle — Claim a handle
@@ -24,17 +25,14 @@ export async function POST(request: NextRequest) {
   const result = claimHandleSchema.safeParse(body)
 
   if (!result.success) {
-    return NextResponse.json({ 
-      error: 'validation_failed', 
-      details: result.error.errors.map(e => ({ path: e.path, message: e.message })) 
-    }, { status: 422 })
+    return apiValidationError(result.error)
   }
 
   const { handle } = result.data
 
   // Check if user already has a handle
   const existing = await getUserHandle(user.id)
-  if (existing) return NextResponse.json({ error: 'Handle already claimed' }, { status: 409 })
+  if (existing) return apiError(409, 'handle_already_claimed', 'Handle already claimed')
 
   const userEmail = user.email?.toLowerCase()
 
@@ -43,7 +41,7 @@ export async function POST(request: NextRequest) {
     
     // Check if handle is already claimed (active)
     if (store.handlesBySlug.has(handle)) {
-      return NextResponse.json({ error: 'handle_taken' }, { status: 409 })
+      return apiError(409, 'handle_taken', 'Handle is already claimed')
     }
     
     // Check if handle is reserved on waitlist by someone else
@@ -51,10 +49,11 @@ export async function POST(request: NextRequest) {
     if (waitlistId) {
       const reservation = store.waitlist.get(waitlistId)
       if (reservation && reservation.email !== userEmail) {
-        return NextResponse.json({ 
-          error: 'handle_reserved', 
-          message: 'This handle is reserved by another user on the waitlist' 
-        }, { status: 409 })
+        return apiError(
+          409,
+          'handle_reserved',
+          'This handle is reserved by another user on the waitlist'
+        )
       }
     }
     
@@ -85,7 +84,7 @@ export async function POST(request: NextRequest) {
     .maybeSingle()
   
   if (taken) {
-    return NextResponse.json({ error: 'handle_taken' }, { status: 409 })
+    return apiError(409, 'handle_taken', 'Handle is already claimed')
   }
 
   // Check if handle is reserved on waitlist by someone else
@@ -96,10 +95,11 @@ export async function POST(request: NextRequest) {
     .maybeSingle()
   
   if (reservation && reservation.email.toLowerCase() !== userEmail) {
-    return NextResponse.json({ 
-      error: 'handle_reserved', 
-      message: 'This handle is reserved by another user on the waitlist' 
-    }, { status: 409 })
+    return apiError(
+      409,
+      'handle_reserved',
+      'This handle is reserved by another user on the waitlist'
+    )
   }
 
   // Create the handle
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
     .select()
     .single()
 
-  if (error) return NextResponse.json({ error: 'Failed to claim handle' }, { status: 500 })
+  if (error) return apiError(500, 'handle_claim_failed', 'Failed to claim handle')
   return NextResponse.json(data, { status: 201 })
 }
 
@@ -125,17 +125,14 @@ export async function PUT(request: NextRequest) {
   const result = updateHandleSchema.safeParse(body)
 
   if (!result.success) {
-    return NextResponse.json({ 
-      error: 'validation_failed', 
-      details: result.error.errors.map(e => ({ path: e.path, message: e.message })) 
-    }, { status: 422 })
+    return apiValidationError(result.error)
   }
 
   const updates = result.data
 
   if (!SUPABASE_CONFIGURED) {
     const handleId = store.handlesByOwner.get(user.id)
-    if (!handleId) return NextResponse.json({ error: 'No handle found' }, { status: 404 })
+    if (!handleId) return apiError(404, 'handle_not_found', 'No handle found')
     const current = store.handles.get(handleId)!
     const updated = { ...current, ...updates }
     store.handles.set(handleId, updated)
@@ -150,6 +147,6 @@ export async function PUT(request: NextRequest) {
     .select()
     .single()
 
-  if (error) return NextResponse.json({ error: 'Update failed' }, { status: 500 })
+  if (error) return apiError(500, 'handle_update_failed', 'Update failed')
   return NextResponse.json(data)
 }
