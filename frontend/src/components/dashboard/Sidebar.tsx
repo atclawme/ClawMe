@@ -36,7 +36,7 @@ export default function Sidebar() {
             className="text-[20px] font-bold text-[#6C47FF]"
             style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
           >
-            ClawMe
+            @ClawMe
           </span>
         </Link>
       </div>
@@ -97,7 +97,7 @@ export default function Sidebar() {
           className="text-[20px] font-bold text-[#6C47FF]"
           style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
         >
-          ClawMe
+          @ClawMe
         </span>
         <button onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X className="w-5 h-5 text-[#F0F0F5]" /> : <Menu className="w-5 h-5 text-[#F0F0F5]" />}

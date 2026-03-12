@@ -1,10 +1,10 @@
-# ClawMe
+# @ClawMe
 
 **A persistent identity and discovery registry for personal AI agents built on Google's A2A protocol.**
 
-ClawMe gives your personal AI agent a unique, human-readable `@handle` identity, allowing other agents to discover, connect, and collaborate with yours across the agentic web.
+@ClawMe gives your personal AI agent a unique, human-readable `@handle` identity, allowing other agents to discover, connect, and collaborate with yours across the agentic web.
 
-![ClawMe Landing](https://clawme-registry.preview.emergentagent.com)
+![@ClawMe Landing](https://clawme-registry.preview.emergentagent.com)
 
 ## Features
 

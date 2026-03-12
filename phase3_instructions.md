@@ -1,23 +1,23 @@
 
 
 ```markdown
-# ClawMe — Phase 3 Build Spec
+# @ClawMe — Phase 3 Build Spec
 ## ClawMe-Connect Skill for OpenClaw
 
 ---
 
 ## FRAMING INSTRUCTION — READ FIRST
 
-This is Phase 3 of the ClawMe project. Phases 1 and 2 are complete and live:
+This is Phase 3 of the @ClawMe project. Phases 1 and 2 are complete and live:
 - Phase 1: Landing page + waitlist capture (Next.js, Vercel)
 - Phase 2: Registry core — GitHub OAuth, handles table, resolver API, heartbeat,
   connection system, dashboard (Next.js, Supabase, Vercel)
 
-Phase 3 is a SEPARATE repository. It is NOT part of the ClawMe web app repo.
+Phase 3 is a SEPARATE repository. It is NOT part of the @ClawMe web app repo.
 It is an OpenClaw skill — a small Python package that users install into their
 local OpenClaw workspace via ClawHub.
 
-Do not add any files from this spec to the ClawMe web repo.
+Do not add any files from this spec to the @ClawMe web repo.
 Create a new repo: `clawme/clawme-connect`
 
 ---
@@ -25,7 +25,7 @@ Create a new repo: `clawme/clawme-connect`
 ## WHAT THIS PHASE BUILDS
 
 The ClawMe-Connect skill is the client-side bridge that connects a user's local
-OpenClaw agent to the live ClawMe registry. It makes ClawMe self-maintaining —
+OpenClaw agent to the live @ClawMe registry. It makes @ClawMe self-maintaining —
 the user never manually updates their gateway URL again.
 
 Core responsibilities:
@@ -78,7 +78,7 @@ gateway_url       The user's tunnel URL (e.g. wss://abc123.trycloudflare.com)
 
 ### Secrets (set via OpenClaw secrets manager)
 ```
-CLAWME_API_TOKEN  The user's Supabase JWT from their ClawMe account
+CLAWME_API_TOKEN  The user's Supabase JWT from their @ClawMe account
                   User gets this from: clawme.network/dashboard → "API Token" section
 ```
 
@@ -103,7 +103,7 @@ ClawMe-Connect is active. Write it exactly as follows:
 name: ClawMe-Connect
 version: 1.0.0
 author: clawme
-description: Connects your OpenClaw agent to the ClawMe registry for persistent
+description: Connects your OpenClaw agent to the @ClawMe registry for persistent
              identity, agent discovery, and permissioned connections.
 requires_config:
   - gateway_url
@@ -127,7 +127,7 @@ Always respect the supportedMethods in the returned card.
 Do not attempt methods not listed there.
 
 If the card contains a connection_request_url instead of a gateway endpoint,
-tell the user: "@handle is on ClawMe but you are not yet connected.
+tell the user: "@handle is on @ClawMe but you are not yet connected.
 Would you like to send them a connection request?"
 
 ## 3. CONNECTION REQUESTS
@@ -220,11 +220,11 @@ def sync_with_registry():
     token   = sdk.get_secret("CLAWME_API_TOKEN")
 
     if not gateway or not token:
-        sdk.log("ClawMe: gateway_url or CLAWME_API_TOKEN not configured. Skipping heartbeat.")
+        sdk.log("@ClawMe: gateway_url or CLAWME_API_TOKEN not configured. Skipping heartbeat.")
         return
 
     if _is_bare_ip(gateway) or gateway.startswith("http://"):
-        sdk.log("ClawMe: gateway_url is not a secure tunnel URL. Heartbeat skipped.")
+        sdk.log("@ClawMe: gateway_url is not a secure tunnel URL. Heartbeat skipped.")
         return
 
     try:
@@ -235,17 +235,17 @@ def sync_with_registry():
             timeout=10
         )
         if resp.status_code == 200:
-            sdk.log("ClawMe: Heartbeat OK.")
+            sdk.log("@ClawMe: Heartbeat OK.")
         elif resp.status_code == 401:
-            sdk.log("ClawMe: Heartbeat failed — CLAWME_API_TOKEN is invalid or expired.")
+            sdk.log("@ClawMe: Heartbeat failed — CLAWME_API_TOKEN is invalid or expired.")
         elif resp.status_code == 404:
-            sdk.log("ClawMe: Heartbeat failed — no handle registered for this token.")
+            sdk.log("@ClawMe: Heartbeat failed — no handle registered for this token.")
         else:
-            sdk.log(f"ClawMe: Heartbeat failed — status {resp.status_code}.")
+            sdk.log(f"@ClawMe: Heartbeat failed — status {resp.status_code}.")
     except requests.exceptions.Timeout:
-        sdk.log("ClawMe: Heartbeat timed out. Will retry next interval.")
+        sdk.log("@ClawMe: Heartbeat timed out. Will retry next interval.")
     except requests.exceptions.ConnectionError:
-        sdk.log("ClawMe: Heartbeat failed — could not reach clawme.network.")
+        sdk.log("@ClawMe: Heartbeat failed — could not reach clawme.network.")
 
 # ── LOOKUP TOOL ──────────────────────────────────────────────────────────────
 @sdk.tool
@@ -270,10 +270,10 @@ def clawme_lookup(handle: str) -> dict:
             timeout=10
         )
         if resp.status_code == 404:
-            return {"error": "not_found", "message": f"@{handle} is not registered on ClawMe."}
+            return {"error": "not_found", "message": f"@{handle} is not registered on @ClawMe."}
         return resp.json()
     except requests.exceptions.Timeout:
-        return {"error": "timeout", "message": "ClawMe registry did not respond in time."}
+        return {"error": "timeout", "message": "@ClawMe registry did not respond in time."}
     except requests.exceptions.ConnectionError:
         return {"error": "connection_error", "message": "Could not reach clawme.network."}
 
@@ -281,7 +281,7 @@ def clawme_lookup(handle: str) -> dict:
 @sdk.tool
 def clawme_request_connection(handle: str, message: str = "") -> dict:
     """
-    Sends a connection request to a ClawMe @handle.
+    Sends a connection request to a @ClawMe @handle.
     Always get user approval before calling this tool.
     """
     token  = sdk.get_secret("CLAWME_API_TOKEN")
@@ -302,7 +302,7 @@ def clawme_request_connection(handle: str, message: str = "") -> dict:
         elif resp.status_code == 409:
             return {"error": "already_exists", "message": f"A connection with @{handle} already exists or is pending."}
         elif resp.status_code == 404:
-            return {"error": "not_found", "message": f"@{handle} is not registered on ClawMe."}
+            return {"error": "not_found", "message": f"@{handle} is not registered on @ClawMe."}
         else:
             return {"error": "failed", "message": f"Request failed with status {resp.status_code}."}
     except requests.exceptions.Timeout:
@@ -348,7 +348,7 @@ def clawme_update_handle(
     visibility_tier: int = None
 ) -> dict:
     """
-    Updates the user's ClawMe handle settings.
+    Updates the user's @ClawMe handle settings.
     Only provide the fields you want to change — others are left untouched.
     visibility_tier: 1 = public, 2 = connections only, 3 = approval required
     """
@@ -400,7 +400,7 @@ def check_pending_connections():
 
         count = len(pending)
         sdk.notify(
-            f"You have {count} pending ClawMe connection request{'s' if count > 1 else ''}. "
+            f"You have {count} pending @ClawMe connection request{'s' if count > 1 else ''}. "
             f"Say 'show pending requests' to review them."
         )
     except Exception:
@@ -422,7 +422,7 @@ ClawHub marketplace metadata. Fill in exactly:
   "name": "clawme-connect",
   "display_name": "ClawMe-Connect",
   "version": "1.0.0",
-  "description": "Connects your OpenClaw agent to the ClawMe registry. Gives your agent a persistent @handle, keeps your gateway URL current automatically, and lets you discover and connect with other agents.",
+  "description": "Connects your OpenClaw agent to the @ClawMe registry. Gives your agent a persistent @handle, keeps your gateway URL current automatically, and lets you discover and connect with other agents.",
   "author": "clawme",
   "homepage": "https://clawme.network",
   "repository": "https://github.com/clawme/clawme-connect",
@@ -452,7 +452,7 @@ That is all. No other dependencies.
 ````markdown
 # ClawMe-Connect
 
-An OpenClaw skill that connects your agent to the [ClawMe](https://clawme.network)
+An OpenClaw skill that connects your agent to the [@ClawMe](https://clawme.network)
 registry — giving it a persistent `@handle` and keeping it discoverable by other agents.
 
 ## What it does
@@ -471,7 +471,7 @@ clawhub install clawme/clawme-connect
 
 ## Setup
 
-1. **Create your ClawMe account** at [clawme.network](https://clawme.network)
+1. **Create your @ClawMe account** at [clawme.network](https://clawme.network)
 2. **Claim your @handle** on the dashboard
 3. **Set up a tunnel** — [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
    or [Tailscale Funnel](https://tailscale.com/kb/1223/tailscale-funnel)
@@ -498,7 +498,7 @@ language commands with your agent:
 ## Requirements
 
 - OpenClaw 1.0.0 or later
-- A ClawMe account with a claimed handle
+- A @ClawMe account with a claimed handle
 - A tunnel URL (Cloudflare Tunnel or Tailscale Funnel)
 
 ## Privacy
@@ -540,7 +540,7 @@ Test across at least two network environments (home WiFi + mobile hotspot minimu
 ### Heartbeat
 - [ ] Heartbeat fires on startup without any user prompt
 - [ ] Heartbeat fires again after 10 minutes automatically
-- [ ] `last_heartbeat` updates in the ClawMe dashboard after each heartbeat
+- [ ] `last_heartbeat` updates in the @ClawMe dashboard after each heartbeat
 - [ ] Heartbeat fails gracefully on network loss — no crash, log message only
 - [ ] Heartbeat is skipped (with log) if `CLAWME_API_TOKEN` is missing
 - [ ] Heartbeat is skipped (with log) if `gateway_url` is a bare IP
@@ -589,13 +589,13 @@ Test across at least two network environments (home WiFi + mobile hotspot minimu
 - No Cloudflare Tunnel provisioning (Phase 5)
 - No LinkedIn auth integration (Phase 4)
 - No custom marketplace outside ClawHub
-- No modification to the ClawMe web repo
+- No modification to the @ClawMe web repo
 
 ---
 
 ## PHASE 4 PREVIEW (context only — do not build)
 
-Phase 4 adds LinkedIn OAuth as a second identity provider in the ClawMe web app,
+Phase 4 adds LinkedIn OAuth as a second identity provider in the @ClawMe web app,
 introduces the trust_score system (increments for verified identity, active heartbeat,
 approved connections), and adds rate limiting on the resolver API. A new spec document
 will be provided when Phase 4 begins.

@@ -1,6 +1,6 @@
 # 🛡️ Security Hardening & Production Readiness Checklist
 
-This document tracks the security status and production readiness of the **ClawMe** platform. 
+This document tracks the security status and production readiness of the **@ClawMe** platform. 
 
 ## 1. 🚨 Critical Vulnerability Status
 

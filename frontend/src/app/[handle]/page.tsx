@@ -73,7 +73,7 @@ export default function PublicProfilePage() {
             >
               @{rawHandle}
             </span>{' '}
-            has not been registered on ClawMe.
+            has not been registered on @ClawMe.
           </p>
           <Link
             href="/#waitlist"
@@ -99,7 +99,7 @@ export default function PublicProfilePage() {
         <div className="max-w-[1100px] mx-auto w-full flex items-center justify-between">
           <Link href="/">
             <span className="font-bold text-[20px] text-[#6C47FF]"
-              style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}>ClawMe</span>
+              style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}>@ClawMe</span>
           </Link>
           <Link href="/login" className="px-4 py-2 text-sm font-semibold border border-[#3F3F50] rounded-lg text-[#F0F0F5] hover:border-[#6C47FF] hover:text-[#6C47FF] transition-colors">
             Sign in

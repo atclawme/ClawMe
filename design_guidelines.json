@@ -1,5 +1,5 @@
 {
-  "project_name": "ClawMe",
+  "project_name": "@ClawMe",
   "version": "1.0",
   "type": "Landing Page + Waitlist",
   "design_philosophy": {
@@ -90,7 +90,7 @@
         "height": "h-[60px]",
         "background": "bg-[#0A0A0F]/80 backdrop-blur-md border-b border-border",
         "elements": [
-          "Logo (Left): 'ClawMe' wordmark, font-sans, font-bold, text-xl",
+          "Logo (Left): '@ClawMe' wordmark, font-sans, font-bold, text-xl",
           "CTA (Right): 'Join Waitlist', Ghost variant, text-sm"
         ]
       }

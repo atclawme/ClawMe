@@ -1,4 +1,4 @@
-# ClawMe — GitHub OAuth Activation Guide
+# @ClawMe — GitHub OAuth Activation Guide
 
 Connect GitHub OAuth to enable user authentication.
 
@@ -9,7 +9,7 @@ Connect GitHub OAuth to enable user authentication.
 1. Go to [https://github.com/settings/developers](https://github.com/settings/developers)
 2. Click **New OAuth App**
 3. Fill in:
-   - **Application name:** ClawMe
+   - **Application name:** @ClawMe
    - **Homepage URL:** `https://clawme-registry.preview.emergentagent.com` (or your production domain)
    - **Authorization callback URL:** `https://<YOUR_SUPABASE_PROJECT_REF>.supabase.co/auth/v1/callback`
      > Find your project ref in Supabase: Settings > General > Reference ID

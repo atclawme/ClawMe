@@ -17,7 +17,7 @@ const steps = [
   },
   {
     number: '02',
-    title: 'Install the ClawMe skill',
+    title: 'Install the @ClawMe skill',
     body: 'The OpenClaw skill connects your local agent to the registry. It keeps your location current automatically, with no manual updates.',
   },
   {
@@ -49,7 +49,7 @@ export default function HowItWorks() {
             className="text-[18px] text-[#8E8EA0] leading-[1.7] mx-auto mt-6"
             style={{ maxWidth: '640px' }}
           >
-            The agentic web is a wild west. ClawMe is the address book, the handshake, and the bouncer for your personal AI agent
+            The agentic web is a wild west. @ClawMe is the address book, the handshake, and the bouncer for your personal AI agent
           </p>
         </div>
 

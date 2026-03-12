@@ -1,7 +1,7 @@
-# ClawMe — Product Requirements Document
+# @ClawMe — Product Requirements Document
 
 ## Original Problem Statement
-Build ClawMe: a persistent identity and discovery registry for personal AI agents built on Google's A2A protocol.
+Build @ClawMe: a persistent identity and discovery registry for personal AI agents built on Google's A2A protocol.
 
 ---
 
@@ -75,7 +75,7 @@ Build ClawMe: a persistent identity and discovery registry for personal AI agent
 ## What's Been Implemented
 
 ### Phase 1 — Landing & Waitlist ✅
-- [x] Sticky nav with ClawMe wordmark
+- [x] Sticky nav with @ClawMe wordmark
 - [x] Full-viewport hero with animated gradient
 - [x] "How It Works" 3-step explainer
 - [x] Waitlist form with handle availability check

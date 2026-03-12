@@ -53,7 +53,7 @@ export default function Nav() {
             style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
             data-testid="nav-logo"
           >
-            ClawMe
+            @ClawMe
           </span>
         </Link>
 

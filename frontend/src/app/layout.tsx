@@ -16,9 +16,9 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'ClawMe — Your @handle for every AI agent',
+  title: '@ClawMe — Your @handle for every AI agent',
   description:
-    "ClawMe gives your personal agent a persistent, human-readable identity built on Google's A2A protocol.",
+    "@ClawMe gives your personal agent a persistent, human-readable identity built on Google's A2A protocol.",
 }
 
 export default function RootLayout({

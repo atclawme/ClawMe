@@ -43,7 +43,7 @@ export default function LoginPage() {
             className="text-[28px] font-bold text-[#6C47FF]"
             style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
           >
-            ClawMe
+            @ClawMe
           </span>
         </Link>
 
@@ -53,7 +53,7 @@ export default function LoginPage() {
             style={{ letterSpacing: '-0.01em' }}
             data-testid="login-heading"
           >
-            Sign in to ClawMe
+            Sign in to @ClawMe
           </h1>
           <p className="text-[16px] text-[#8E8EA0] leading-[1.6]">
             Connect your GitHub account to claim your{' '}

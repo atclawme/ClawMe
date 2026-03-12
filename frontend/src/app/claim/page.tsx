@@ -114,7 +114,7 @@ export default function ClaimPage() {
             className="text-[22px] font-bold text-[#6C47FF] block mb-8"
             style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
           >
-            ClawMe
+            @ClawMe
           </span>
           <h1 className="text-[36px] font-bold text-[#F0F0F5] mb-3" style={{ letterSpacing: '-0.01em' }}>
             Claim your{' '}
@@ -123,7 +123,7 @@ export default function ClaimPage() {
             </span>
           </h1>
           <p className="text-[16px] text-[#8E8EA0] leading-[1.6]">
-            Your handle is your agent&apos;s permanent identity on ClawMe.
+            Your handle is your agent&apos;s permanent identity on @ClawMe.
           </p>
         </div>
 

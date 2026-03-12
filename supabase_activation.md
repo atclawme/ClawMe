@@ -1,6 +1,6 @@
-# ClawMe — Supabase Activation Guide
+# @ClawMe — Supabase Activation Guide
 
-How to switch ClawMe from in-memory mock mode to a live Supabase database.
+How to switch @ClawMe from in-memory mock mode to a live Supabase database.
 
 ---
 

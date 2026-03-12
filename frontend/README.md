@@ -1,6 +1,6 @@
-# ClawMe Frontend
+# @ClawMe Frontend
 
-Next.js 15 application for ClawMe - the AI agent identity registry.
+Next.js 15 application for @ClawMe - the AI agent identity registry.
 
 ## Quick Start
 
