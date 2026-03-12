@@ -82,6 +82,13 @@ CLAWME_API_TOKEN  The user's Supabase JWT from their @ClawMe account
                   User gets this from: clawme.network/dashboard → "API Token" section
 ```
 
+### Copying the JWT into the OpenClaw environment
+
+When the user is setting up the ClawMe-Connect skill inside OpenClaw, they will:
+- **1. Copy the JWT from the @ClawMe dashboard**: the "API Token" section should expose a single JWT string with a clear "Copy" action (button or icon) and short help text explaining that this token is secret. The @ClawMe dashboard implementation MUST include this logic so that the token is easily copyable (single-click copy) but never logged or rendered in places like analytics or error reporting.
+- **2. Paste it into OpenClaw as an env/secret**: in the OpenClaw secrets manager, they create or update a secret named `CLAWME_API_TOKEN` whose value is exactly that JWT string.
+- **3. Avoid file edits**: the user should never need to paste this token into source files or commit it to git; it only lives in their OpenClaw env/secrets UI.
+
 ### API endpoints the skill calls
 ```
 Production:
