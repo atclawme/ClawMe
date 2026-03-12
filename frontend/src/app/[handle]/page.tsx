@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams, notFound } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { Clock, ExternalLink } from 'lucide-react'
+import { Clock } from 'lucide-react'
 import RequestConnectionModal from '@/components/profile/RequestConnectionModal'
 import Link from 'next/link'
 
@@ -38,6 +38,7 @@ export default function PublicProfilePage() {
   const [loading, setLoading] = useState(true)
   const [notFoundState, setNotFound] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [selfHandle, setSelfHandle] = useState<string | null>(null)
 
   useEffect(() => {
     if (!rawHandle) return
@@ -51,6 +52,25 @@ export default function PublicProfilePage() {
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false))
   }, [rawHandle])
+
+  useEffect(() => {
+    let cancelled = false
+    fetch('/api/handle/me', { credentials: 'include' })
+      .then(async (res) => {
+        if (!res.ok) return null
+        const data = await res.json()
+        const h = typeof data?.handle === 'string' ? data.handle : null
+        return h ? String(h).toLowerCase().trim() : null
+      })
+      .then((h) => {
+        if (cancelled) return
+        setSelfHandle(h)
+      })
+      .catch(() => {
+        // Ignore auth/handle lookup errors on public profiles.
+      })
+    return () => { cancelled = true }
+  }, [])
 
   if (loading) {
     return (
@@ -90,6 +110,7 @@ export default function PublicProfilePage() {
   const lastHeartbeat = handleMeta?.last_heartbeat as string | undefined
   const isRecent = lastHeartbeat && (Date.now() - new Date(lastHeartbeat).getTime() < 24 * 60 * 60 * 1000)
   const methods = card.supportedMethods || []
+  const isSelf = !!selfHandle && selfHandle === rawHandle
 
   return (
     <main className="min-h-screen bg-[#0A0A0F]">
@@ -162,21 +183,23 @@ export default function PublicProfilePage() {
             )}
 
             {/* CTA */}
-            <motion.button
-              onClick={() => setShowModal(true)}
-              data-testid="request-connection-btn"
-              className="w-full h-12 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2 transition-colors"
-              style={{ backgroundColor: '#6C47FF', transitionDuration: '150ms' }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              Request Connection
-            </motion.button>
+            {!isSelf && (
+              <motion.button
+                onClick={() => setShowModal(true)}
+                data-testid="request-connection-btn"
+                className="w-full h-12 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-2 transition-colors"
+                style={{ backgroundColor: '#6C47FF', transitionDuration: '150ms' }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Request Connection
+              </motion.button>
+            )}
           </motion.div>
         </div>
       </div>
 
-      {showModal && (
+      {showModal && !isSelf && (
         <RequestConnectionModal
           targetHandle={rawHandle}
           onClose={() => setShowModal(false)}

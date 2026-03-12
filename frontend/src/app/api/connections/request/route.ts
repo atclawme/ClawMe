@@ -26,6 +26,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'You need a handle to send connection requests' }, { status: 400 })
   }
 
+  // Prevent self-requests even if UI is bypassed.
+  if (requesterHandle.handle?.toLowerCase?.().trim?.() === target_handle.toLowerCase().trim()) {
+    return NextResponse.json({ error: 'Cannot request connection to yourself' }, { status: 400 })
+  }
+
   if (!SUPABASE_CONFIGURED) {
     const targetHandleId = store.handlesBySlug.get(target_handle.toLowerCase())
     if (!targetHandleId) return NextResponse.json({ error: 'Target handle not found' }, { status: 404 })
