@@ -3,8 +3,15 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Sidebar from '@/components/dashboard/Sidebar'
-import { Loader2, Save, X, Plus } from 'lucide-react'
+import { Loader2, Save, X, Plus, AlertTriangle } from 'lucide-react'
 import type { HandleData } from '../page'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 const METHOD_OPTIONS = ['GET_AVAILABILITY', 'PROPOSE_MEETING', 'SEND_MESSAGE', 'SHARE_CONTEXT', 'REQUEST_ACTION']
 const TIER_OPTIONS = [
@@ -36,8 +43,14 @@ export default function SettingsPage() {
   useEffect(() => {
     async function load() {
       const res = await fetch('/api/handle/me', { credentials: 'include' })
-      if (res.status === 401) { router.replace('/login'); return }
-      if (res.status === 404) { router.replace('/claim'); return }
+      if (res.status === 401) {
+        router.replace('/login')
+        return
+      }
+      if (res.status === 404) {
+        router.replace('/claim')
+        return
+      }
       if (res.ok) {
         const data: HandleData = await res.json()
         setHandle(data)
@@ -47,7 +60,7 @@ export default function SettingsPage() {
         setGatewayUrl(data.target_gateway || '')
         setPublicKey(data.public_key || '')
         setVisibilityTier(data.visibility_tier || 3)
-        const rules = data.auto_approve_rules as Record<string, unknown> || {}
+        const rules = (data.auto_approve_rules as Record<string, unknown>) || {}
         setAutoApproveVerified(Boolean(rules.verified_only))
       }
       setLoading(false)
@@ -56,19 +69,31 @@ export default function SettingsPage() {
   }, [router])
 
   const validateGateway = (url: string) => {
-    if (!url) { setGatewayWarning(''); return }
+    if (!url) {
+      setGatewayWarning('')
+      return
+    }
     if (!url.startsWith('https://') && !url.startsWith('wss://')) {
       setGatewayWarning('Gateway must start with https:// or wss://')
     } else if (/^https?:\/\/\d+\.\d+\.\d+\.\d+/.test(url)) {
       setGatewayWarning('Warning: bare IP detected. Approved connections may see your real IP. Consider using a tunnel URL.')
-    } else { setGatewayWarning('') }
+    } else {
+      setGatewayWarning('')
+    }
   }
 
   const save = async (section: string) => {
     setSaving(true)
     const body: Record<string, unknown> = {}
-    if (section === 'handle') { body.display_name = displayName; body.description = description; body.supported_methods = methods }
-    if (section === 'agent') { body.target_gateway = gatewayUrl; body.public_key = publicKey }
+    if (section === 'handle') {
+      body.display_name = displayName
+      body.description = description
+      body.supported_methods = methods
+    }
+    if (section === 'agent') {
+      body.target_gateway = gatewayUrl
+      body.public_key = publicKey
+    }
     if (section === 'visibility') {
       body.visibility_tier = visibilityTier
       if (visibilityTier === 3) body.auto_approve_rules = { verified_only: autoApproveVerified }
@@ -79,11 +104,14 @@ export default function SettingsPage() {
       body: JSON.stringify(body),
     })
     setSaving(false)
-    if (res.ok) { setSaved(true); setTimeout(() => setSaved(false), 2500) }
+    if (res.ok) {
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2500)
+    }
   }
 
   const toggleMethod = (m: string) => {
-    setMethods((prev) => prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m])
+    setMethods((prev) => (prev.includes(m) ? prev.filter((x) => x !== m) : [...prev, m]))
   }
 
   const addCustomMethod = () => {
@@ -95,183 +123,360 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0F]">
-        <Loader2 className="w-6 h-6 animate-spin text-[#6C47FF]" />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     )
   }
 
-  const Section = ({ title, children, onSave, sectionKey }: { title: string; children: React.ReactNode; onSave: () => void; sectionKey: string }) => (
-    <div className="rounded-xl p-6 mb-5" style={{ backgroundColor: '#13131A', border: '1px solid #27272F' }}>
-      <h2 className="text-[16px] font-semibold text-[#F0F0F5] mb-5">{title}</h2>
-      {children}
-      <button
-        onClick={onSave}
-        disabled={saving}
-        data-testid={`save-${sectionKey}-btn`}
-        className="mt-5 px-5 py-2 rounded-lg text-sm font-semibold text-white flex items-center gap-2 transition-colors"
-        style={{ backgroundColor: '#6C47FF', transitionDuration: '150ms' }}
-      >
-        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-        {saved ? 'Saved!' : 'Save changes'}
-      </button>
-    </div>
+  const Section = ({
+    title,
+    description,
+    children,
+    onSave,
+    sectionKey,
+  }: {
+    title: string
+    description?: string
+    children: React.ReactNode
+    onSave: () => void
+    sectionKey: string
+  }) => (
+    <Card className="border-border/70 bg-background/80 shadow-sm">
+      <CardHeader className="pb-4">
+        <div className="space-y-1">
+          <CardTitle className="text-[15px] font-semibold tracking-tight text-foreground">
+            {title}
+          </CardTitle>
+          {description && (
+            <p className="text-[12px] text-muted-foreground">{description}</p>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className="pt-0">
+        {children}
+        <div className="mt-5 flex justify-end">
+          <Button
+            onClick={onSave}
+            disabled={saving}
+            data-testid={`save-${sectionKey}-btn`}
+            className="inline-flex items-center gap-2 text-sm font-semibold"
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+            {saved ? 'Saved!' : 'Save changes'}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
   )
 
   return (
-    <div className="min-h-screen bg-[#0A0A0F] flex">
+    <div className="flex min-h-screen bg-background">
       <Sidebar />
-      <main className="flex-1 md:ml-[240px] p-6 pt-[60px] md:pt-6">
-        <div className="max-w-[680px] mx-auto">
-          <h1 className="text-[24px] font-bold text-[#F0F0F5] mb-8" style={{ letterSpacing: '-0.01em' }}>Settings</h1>
+      <main className="flex-1 p-6 pt-[60px] md:ml-60 md:pt-6">
+        <div className="mx-auto max-w-[960px] space-y-6">
+          {/* Page header */}
+          <div className="flex flex-col gap-1">
+            <h1
+              className="text-[24px] font-semibold tracking-tight text-foreground"
+              style={{ letterSpacing: '-0.02em' }}
+            >
+              Settings
+            </h1>
+            <p className="text-[13px] text-muted-foreground">
+              Tune how your handle looks, how your agent connects, and who can reach you.
+            </p>
+          </div>
 
-          {/* Handle Settings */}
-          <Section title="Handle Settings" onSave={() => save('handle')} sectionKey="handle">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-[13px] font-medium uppercase text-[#8E8EA0] mb-2" style={{ letterSpacing: '0.05em' }}>Display name</label>
-                <input
-                  type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} maxLength={50}
-                  placeholder="Your display name"
-                  data-testid="display-name-input"
-                  className="w-full h-11 rounded-lg px-4 text-[#F0F0F5] text-sm placeholder-[#52525B] outline-none"
-                  style={{ backgroundColor: '#1C1C28', border: '1px solid #3F3F50' }}
-                  onFocus={(e) => (e.target.style.borderColor = '#6C47FF')}
-                  onBlur={(e) => (e.target.style.borderColor = '#3F3F50')}
-                />
-              </div>
-              <div>
-                <label className="block text-[13px] font-medium uppercase text-[#8E8EA0] mb-2" style={{ letterSpacing: '0.05em' }}>Description</label>
-                <textarea
-                  value={description} onChange={(e) => setDescription(e.target.value)} maxLength={280} rows={3}
-                  placeholder="What does your agent do?"
-                  data-testid="description-input"
-                  className="w-full rounded-lg px-4 py-3 text-[#F0F0F5] text-sm placeholder-[#52525B] outline-none resize-none"
-                  style={{ backgroundColor: '#1C1C28', border: '1px solid #3F3F50' }}
-                  onFocus={(e) => (e.target.style.borderColor = '#6C47FF')}
-                  onBlur={(e) => (e.target.style.borderColor = '#3F3F50')}
-                />
-                <p className="text-[12px] text-[#52525B] mt-1">{description.length}/280</p>
-              </div>
-              <div>
-                <label className="block text-[13px] font-medium uppercase text-[#8E8EA0] mb-2" style={{ letterSpacing: '0.05em' }}>Supported methods</label>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {METHOD_OPTIONS.map((m) => (
-                    <button key={m} onClick={() => toggleMethod(m)}
-                      className="px-3 py-1 rounded-full text-[12px] font-medium transition-colors"
-                      style={{
-                        backgroundColor: methods.includes(m) ? '#6C47FF1A' : '#1C1C28',
-                        border: `1px solid ${methods.includes(m) ? '#6C47FF' : '#3F3F50'}`,
-                        color: methods.includes(m) ? '#6C47FF' : '#8E8EA0',
-                      }}
-                    >{m}</button>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <input type="text" value={customMethod} onChange={(e) => setCustomMethod(e.target.value)} placeholder="CUSTOM_METHOD"
-                    className="flex-1 h-9 rounded-lg px-3 text-[#F0F0F5] text-sm placeholder-[#52525B] outline-none"
-                    style={{ backgroundColor: '#1C1C28', border: '1px solid #3F3F50' }}
-                    onKeyDown={(e) => e.key === 'Enter' && addCustomMethod()}
-                  />
-                  <button onClick={addCustomMethod} className="px-3 h-9 rounded-lg text-[#6C47FF] transition-colors" style={{ border: '1px solid #3F3F50' }}>
-                    <Plus className="w-4 h-4" />
-                  </button>
-                </div>
-                {methods.filter((m) => !METHOD_OPTIONS.includes(m)).length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {methods.filter((m) => !METHOD_OPTIONS.includes(m)).map((m) => (
-                      <span key={m} className="flex items-center gap-1 px-3 py-1 rounded-full text-[12px]"
-                        style={{ backgroundColor: '#6C47FF1A', border: '1px solid #6C47FF', color: '#6C47FF' }}>
-                        {m}
-                        <button onClick={() => setMethods((p) => p.filter((x) => x !== m))}><X className="w-3 h-3" /></button>
-                      </span>
-                    ))}
+          {/* Main layout: profile on the left, connectivity & access on the right */}
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+            {/* Handle & profile */}
+            <Section
+              title="Handle & profile"
+              description="Control how your handle appears on your public profile."
+              onSave={() => save('handle')}
+              sectionKey="handle"
+            >
+              <div className="space-y-4">
+                {handle && (
+                  <div className="flex items-center justify-between rounded-lg border border-border/70 bg-muted/40 px-3 py-2">
+                    <div className="space-y-0.5">
+                      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                        Handle
+                      </p>
+                      <p className="font-mono text-sm text-foreground">@{handle.handle}</p>
+                    </div>
                   </div>
                 )}
-              </div>
-            </div>
-          </Section>
 
-          {/* Agent Settings */}
-          <Section title="Agent Settings" onSave={() => save('agent')} sectionKey="agent">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-[13px] font-medium uppercase text-[#8E8EA0] mb-2" style={{ letterSpacing: '0.05em' }}>Gateway URL</label>
-                <input type="text" value={gatewayUrl}
-                  onChange={(e) => { setGatewayUrl(e.target.value); validateGateway(e.target.value) }}
-                  placeholder="https://your-agent.example.com"
-                  data-testid="gateway-url-input"
-                  className="w-full h-11 rounded-lg px-4 text-[#F0F0F5] text-sm placeholder-[#52525B] outline-none"
-                  style={{ backgroundColor: '#1C1C28', border: `1px solid ${gatewayWarning ? '#F59E0B' : '#3F3F50'}`, fontFamily: 'var(--font-jetbrains-mono), monospace' }}
-                />
-                {gatewayWarning && <p className="text-[12px] mt-1" style={{ color: '#F59E0B' }}>{gatewayWarning}</p>}
-              </div>
-              <div>
-                <label className="block text-[13px] font-medium uppercase text-[#8E8EA0] mb-2" style={{ letterSpacing: '0.05em' }}>Public key (Ed25519)</label>
-                <textarea value={publicKey} onChange={(e) => setPublicKey(e.target.value)} rows={3}
-                  placeholder="z6Mk..."
-                  data-testid="public-key-input"
-                  className="w-full rounded-lg px-4 py-3 text-[#F0F0F5] text-sm placeholder-[#52525B] outline-none resize-none"
-                  style={{ backgroundColor: '#1C1C28', border: '1px solid #3F3F50', fontFamily: 'var(--font-jetbrains-mono), monospace' }}
-                />
-              </div>
-            </div>
-          </Section>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="display-name"
+                    className="text-[13px] font-medium uppercase tracking-[0.18em] text-muted-foreground"
+                  >
+                    Display name
+                  </Label>
+                  <Input
+                    id="display-name"
+                    type="text"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    maxLength={50}
+                    placeholder="Your display name"
+                    data-testid="display-name-input"
+                    className="h-10 text-sm"
+                  />
+                </div>
 
-          {/* Visibility */}
-          <Section title="Visibility and Access" onSave={() => save('visibility')} sectionKey="visibility">
-            <div className="space-y-3">
-              {TIER_OPTIONS.map((tier) => (
-                <button key={tier.value} onClick={() => setVisibilityTier(tier.value)}
-                  className="w-full text-left rounded-lg p-4 transition-colors"
-                  style={{
-                    backgroundColor: visibilityTier === tier.value ? '#6C47FF1A' : '#1C1C28',
-                    border: `1px solid ${visibilityTier === tier.value ? '#6C47FF' : '#3F3F50'}`,
-                  }}>
-                  <p className="text-[14px] font-semibold" style={{ color: visibilityTier === tier.value ? '#6C47FF' : '#F0F0F5' }}>{tier.label}</p>
-                  <p className="text-[13px] text-[#8E8EA0] mt-1">{tier.desc}</p>
-                </button>
-              ))}
-              {visibilityTier === 3 && (
-                <label className="flex items-center gap-3 p-4 rounded-lg cursor-pointer" style={{ backgroundColor: '#1C1C28', border: '1px solid #3F3F50' }}>
-                  <input type="checkbox" checked={autoApproveVerified} onChange={(e) => setAutoApproveVerified(e.target.checked)}
-                    className="w-4 h-4 accent-[#6C47FF]" />
-                  <span className="text-[14px] text-[#F0F0F5]">Auto-approve verified GitHub users</span>
-                </label>
-              )}
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="description"
+                    className="text-[13px] font-medium uppercase tracking-[0.18em] text-muted-foreground"
+                  >
+                    Description
+                  </Label>
+                  <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    maxLength={280}
+                    rows={3}
+                    placeholder="What does your agent do?"
+                    data-testid="description-input"
+                    className="text-sm"
+                  />
+                  <p className="mt-1 text-[12px] text-muted-foreground/80">{description.length}/280</p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-[13px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+                    Supported methods
+                  </Label>
+                  <p className="text-[12px] text-muted-foreground">
+                    Choose how other agents can interact with you. These appear on your Agent Card.
+                  </p>
+                  <div className="mb-2 flex flex-wrap gap-2">
+                    {METHOD_OPTIONS.map((m) => {
+                      const active = methods.includes(m)
+                      return (
+                        <Button
+                          key={m}
+                          type="button"
+                          variant={active ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => toggleMethod(m)}
+                          className={`h-7 rounded-full px-3 text-[11px] font-medium ${
+                            active
+                              ? 'bg-primary/15 text-primary border-primary/70'
+                              : 'border-border/70 bg-background text-muted-foreground hover:bg-muted/60'
+                          }`}
+                        >
+                          {m}
+                        </Button>
+                      )
+                    })}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      type="text"
+                      value={customMethod}
+                      onChange={(e) => setCustomMethod(e.target.value)}
+                      placeholder="CUSTOM_METHOD"
+                      className="h-9 flex-1 text-sm"
+                      onKeyDown={(e) => e.key === 'Enter' && addCustomMethod()}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={addCustomMethod}
+                      className="h-9 w-9"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {methods.filter((m) => !METHOD_OPTIONS.includes(m)).length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {methods
+                        .filter((m) => !METHOD_OPTIONS.includes(m))
+                        .map((m) => (
+                          <span
+                            key={m}
+                            className="inline-flex items-center gap-1 rounded-full border border-primary/70 bg-primary/10 px-3 py-1 text-[12px] text-primary"
+                          >
+                            {m}
+                            <button
+                              type="button"
+                              onClick={() => setMethods((p) => p.filter((x) => x !== m))}
+                              className="inline-flex h-4 w-4 items-center justify-center rounded-full hover:bg-primary/20"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Section>
+
+            {/* Connectivity & access */}
+            <div className="space-y-5">
+              <Section
+                title="Agent connectivity"
+                description="Connect your running agent so ClawMe can route traffic to it."
+                onSave={() => save('agent')}
+                sectionKey="agent"
+              >
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="gateway-url"
+                      className="text-[13px] font-medium uppercase tracking-[0.18em] text-muted-foreground"
+                    >
+                      Gateway URL
+                    </Label>
+                    <Input
+                      id="gateway-url"
+                      type="text"
+                      value={gatewayUrl}
+                      onChange={(e) => {
+                        setGatewayUrl(e.target.value)
+                        validateGateway(e.target.value)
+                      }}
+                      placeholder="https://your-agent.example.com"
+                      data-testid="gateway-url-input"
+                      className="h-10 font-mono text-xs"
+                    />
+                    {gatewayWarning && (
+                      <Alert className="mt-2 border-amber-500/40 bg-amber-500/5 text-amber-100">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertDescription className="text-[12px] leading-relaxed">
+                          {gatewayWarning}
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="public-key"
+                      className="text-[13px] font-medium uppercase tracking-[0.18em] text-muted-foreground"
+                    >
+                      Public key (Ed25519)
+                    </Label>
+                    <Textarea
+                      id="public-key"
+                      value={publicKey}
+                      onChange={(e) => setPublicKey(e.target.value)}
+                      rows={3}
+                      placeholder="z6Mk..."
+                      data-testid="public-key-input"
+                      className="font-mono text-xs"
+                    />
+                  </div>
+                </div>
+              </Section>
+
+              <Section
+                title="Visibility & access"
+                description="Decide who can see your full Agent Card and send you requests."
+                onSave={() => save('visibility')}
+                sectionKey="visibility"
+              >
+                <div className="space-y-3">
+                  {TIER_OPTIONS.map((tier) => {
+                    const active = visibilityTier === tier.value
+                    return (
+                      <button
+                        key={tier.value}
+                        type="button"
+                        onClick={() => setVisibilityTier(tier.value)}
+                        className={`w-full rounded-lg border p-4 text-left transition-colors ${
+                          active
+                            ? 'border-primary/70 bg-primary/10'
+                            : 'border-border/70 bg-background hover:bg-muted/60'
+                        }`}
+                      >
+                        <p
+                          className={`text-[14px] font-semibold ${
+                            active ? 'text-primary' : 'text-foreground'
+                          }`}
+                        >
+                          {tier.label}
+                        </p>
+                        <p className="mt-1 text-[13px] text-muted-foreground">{tier.desc}</p>
+                      </button>
+                    )
+                  })}
+                  {visibilityTier === 3 && (
+                    <div className="flex items-center justify-between gap-4 rounded-lg border border-border/70 bg-background px-4 py-3">
+                      <div className="space-y-0.5">
+                        <p className="text-[14px] font-medium text-foreground">
+                          Auto-approve verified GitHub users
+                        </p>
+                        <p className="text-[12px] text-muted-foreground">
+                          Requests from GitHub-verified accounts will be approved automatically.
+                        </p>
+                      </div>
+                      <Switch
+                        checked={autoApproveVerified}
+                        onCheckedChange={(checked: boolean) => setAutoApproveVerified(checked)}
+                        aria-label="Auto-approve verified GitHub users"
+                      />
+                    </div>
+                  )}
+                </div>
+              </Section>
             </div>
-          </Section>
+          </div>
 
           {/* Danger Zone */}
-          <div className="rounded-xl p-6" style={{ backgroundColor: '#13131A', border: '1px solid #EF444440' }}>
-            <h2 className="text-[16px] font-semibold text-[#EF4444] mb-2">Danger Zone</h2>
-            <p className="text-[13px] text-[#8E8EA0] mb-4">Permanently delete your handle. This action cannot be undone.</p>
-            <p className="text-[13px] text-[#8E8EA0] mb-3">
-              Type <span className="font-mono text-[#F0F0F5]">@{handle?.handle}</span> to confirm:
-            </p>
-            <div className="flex gap-3">
-              <input type="text" value={deleteConfirm} onChange={(e) => setDeleteConfirm(e.target.value)}
-                placeholder={`@${handle?.handle}`}
-                className="flex-1 h-10 rounded-lg px-3 text-[#F0F0F5] text-sm placeholder-[#52525B] outline-none"
-                style={{ backgroundColor: '#1C1C28', border: '1px solid #3F3F50', fontFamily: 'var(--font-jetbrains-mono), monospace' }}
-              />
-              <button
-                onClick={async () => {
-                  if (deleteConfirm !== `@${handle?.handle}`) { setDeleteError('Handle does not match'); return }
-                  await fetch('/api/handle', { method: 'DELETE' })
-                  const supabase = (await import('@/lib/supabase')).createClient()
-                  await supabase.auth.signOut()
-                  router.push('/')
-                }}
-                disabled={deleteConfirm !== `@${handle?.handle}`}
-                className="px-4 h-10 rounded-lg text-sm font-semibold text-[#EF4444] transition-colors"
-                style={{ border: '1px solid #EF444440', opacity: deleteConfirm !== `@${handle?.handle}` ? 0.5 : 1 }}
-              >
-                Delete
-              </button>
-            </div>
-            {deleteError && <p className="text-[12px] mt-2" style={{ color: '#EF4444' }}>{deleteError}</p>}
-          </div>
+          <Card className="border-destructive/40 bg-destructive/5">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-[16px] font-semibold text-destructive">Danger Zone</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-0">
+              <p className="text-[13px] text-muted-foreground">
+                Permanently delete your handle. This action cannot be undone.
+              </p>
+              <p className="text-[13px] text-muted-foreground">
+                Type{' '}
+                <span className="font-mono text-foreground">@{handle?.handle}</span> to confirm:
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Input
+                  type="text"
+                  value={deleteConfirm}
+                  onChange={(e) => setDeleteConfirm(e.target.value)}
+                  placeholder={`@${handle?.handle}`}
+                  className="h-10 flex-1 font-mono text-xs"
+                />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={async () => {
+                    if (deleteConfirm !== `@${handle?.handle}`) {
+                      setDeleteError('Handle does not match')
+                      return
+                    }
+                    await fetch('/api/handle', { method: 'DELETE' })
+                    const supabase = (await import('@/lib/supabase')).createClient()
+                    await supabase.auth.signOut()
+                    router.push('/')
+                  }}
+                  disabled={deleteConfirm !== `@${handle?.handle}`}
+                  className="h-10 sm:w-[120px]"
+                >
+                  Delete
+                </Button>
+              </div>
+              {deleteError && (
+                <p className="text-[12px] text-destructive" data-testid="delete-error-message">
+                  {deleteError}
+                </p>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>
