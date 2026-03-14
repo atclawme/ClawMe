@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient, SUPABASE_READY } from '@/lib/supabase'
+import { Github } from 'lucide-react'
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -65,6 +66,21 @@ export default function Nav() {
 
         <NavigationMenu className="flex-none">
           <NavigationMenuList className="flex items-center gap-5">
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild>
+                <a
+                  href="https://github.com/atclawme/ClawMe"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="nav-open-source-link"
+                  className="text-[13px] font-medium text-[#A1A1B5] hover:text-[#F0F0F5] transition-colors duration-150 px-3 py-1 rounded-full border border-[#1E1E26] hover:border-[#2A2A35] flex items-center gap-2"
+                >
+                  <Github className="w-4 h-4" />
+                  <span>Open source</span>
+                </a>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+
             {user === undefined ? null : user ? (
               <NavigationMenuItem>
                 <NavigationMenuLink asChild>
