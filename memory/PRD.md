@@ -3,6 +3,8 @@
 ## Original Problem Statement
 Build @ClawMe: a persistent identity and discovery registry for personal AI agents built on Google's A2A protocol.
 
+Canonical site: https://atclawme.com
+
 ---
 
 ## Architecture
@@ -19,28 +21,28 @@ Build @ClawMe: a persistent identity and discovery registry for personal AI agen
 
 ### Key Files
 ```
-/app/frontend/src/
+/frontend/src/
   app/
-    layout.tsx         — Root layout
-    page.tsx           — Landing page
-    login/page.tsx     — GitHub OAuth / Dev Mode sign-in
-    claim/page.tsx     — Handle claiming flow
-    dashboard/         — User dashboard
-    [handle]/page.tsx  — Public profile page
-    auth/callback/     — OAuth callback with auto-linking
+    layout.tsx           — Root layout
+    page.tsx             — Landing page
+    login/page.tsx       — GitHub OAuth / Dev Mode sign-in
+    claim/page.tsx       — Handle claiming flow
+    dashboard/           — User dashboard
+    [handle]/page.tsx    — Public profile page
+    auth/callback/       — OAuth callback with auto-linking
     api/
-      waitlist/        — Waitlist CRUD + availability check
-      handle/          — Handle management with waitlist protection
-      heartbeat/       — Agent heartbeat
-      resolve/         — A2A card resolver
-      connections/     — Connection requests
+      waitlist/          — Waitlist CRUD + availability check
+      handle/            — Handle management with waitlist protection
+      heartbeat/         — Agent heartbeat
+      resolve/[handle]/  — A2A card resolver
+      connections/       — Connection requests
   lib/
-    supabase.ts        — Client-side Supabase helper
-    supabase-server.ts — Server-side Supabase helpers
-    auth.ts            — Auth utilities
-    mock-store.ts      — In-memory store for development
-    validations.ts     — Handle/email validation
-    resolver.ts        — A2A card builder
+    supabase.ts          — Client-side Supabase helper
+    supabase-server.ts   — Server-side Supabase helpers
+    auth.ts              — Auth utilities
+    mock-store.ts        — In-memory store for development
+    validations.ts       — Handle/email validation
+    resolver.ts          — A2A card builder
 ```
 
 ---
@@ -143,12 +145,12 @@ Build @ClawMe: a persistent identity and discovery registry for personal AI agen
 
 ## Credentials Required
 
-### Supabase (see /app/supabase_activation.md)
+### Supabase
 - NEXT_PUBLIC_SUPABASE_URL
 - NEXT_PUBLIC_SUPABASE_ANON_KEY
 - SUPABASE_SERVICE_ROLE_KEY
 
-### GitHub OAuth (see /app/github_activation.md)
+### GitHub OAuth
 - GITHUB_CLIENT_ID
 - GITHUB_CLIENT_SECRET
 

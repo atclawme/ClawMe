@@ -59,7 +59,7 @@ export function buildA2ACard(handle: Record<string, unknown>, tier: Tier) {
     description: handle.description || '',
     verification: {
       type: 'ClawMeVerifiedHuman',
-      assertionUrl: `https://clawme.network/v1/verify/${handle.handle}`,
+      assertionUrl: `https://atclawme.com/v1/verify/${handle.handle}`,
     },
     supportedMethods: handle.supported_methods || [],
   }
@@ -88,7 +88,7 @@ export function buildA2ACard(handle: Record<string, unknown>, tier: Tier) {
   if (tier === 3) {
     return {
       ...base,
-      connection_request_url: 'https://api.clawme.network/v1/connections/request',
+      connection_request_url: 'https://atclawme.com/api/connections/request',
     }
   }
 

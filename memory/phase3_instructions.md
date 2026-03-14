@@ -79,7 +79,7 @@ gateway_url       The user's tunnel URL (e.g. wss://abc123.trycloudflare.com)
 ### Secrets (set via OpenClaw secrets manager)
 ```
 CLAWME_API_TOKEN  The user's Supabase JWT from their @ClawMe account
-                  User gets this from: clawme.network/dashboard → "API Token" section
+                  User gets this from: atclawme.com/dashboard → "API Token" section
 ```
 
 ### Copying the JWT into the OpenClaw environment
@@ -92,8 +92,8 @@ When the user is setting up the ClawMe-Connect skill inside OpenClaw, they will:
 ### API endpoints the skill calls
 ```
 Production:
-  CLAWME_API     = https://clawme.network/api
-  CLAWME_RESOLVE = https://clawme.network/api/resolve
+  CLAWME_API     = https://atclawme.com/api
+  CLAWME_RESOLVE = https://atclawme.com/api/resolve
 
 These map directly to the Phase 2 Next.js API routes already live.
 ```
@@ -193,8 +193,8 @@ import requests
 import openclaw_sdk as sdk
 
 # ── CONFIG ───────────────────────────────────────────────────────────────────
-CLAWME_API     = "https://clawme.network/api"
-CLAWME_RESOLVE = "https://clawme.network/api/resolve"
+CLAWME_API     = "https://atclawme.com/api"
+CLAWME_RESOLVE = "https://atclawme.com/api/resolve"
 HEARTBEAT_INTERVAL = 600  # 10 minutes in seconds
 _tunnel_warning_shown = False
 
@@ -252,7 +252,7 @@ def sync_with_registry():
     except requests.exceptions.Timeout:
         sdk.log("@ClawMe: Heartbeat timed out. Will retry next interval.")
     except requests.exceptions.ConnectionError:
-        sdk.log("@ClawMe: Heartbeat failed — could not reach clawme.network.")
+        sdk.log("@ClawMe: Heartbeat failed — could not reach atclawme.com.")
 
 # ── LOOKUP TOOL ──────────────────────────────────────────────────────────────
 @sdk.tool
@@ -282,7 +282,7 @@ def clawme_lookup(handle: str) -> dict:
     except requests.exceptions.Timeout:
         return {"error": "timeout", "message": "@ClawMe registry did not respond in time."}
     except requests.exceptions.ConnectionError:
-        return {"error": "connection_error", "message": "Could not reach clawme.network."}
+        return {"error": "connection_error", "message": "Could not reach atclawme.com."}
 
 # ── CONNECTION REQUEST TOOL ──────────────────────────────────────────────────
 @sdk.tool
@@ -431,7 +431,7 @@ ClawHub marketplace metadata. Fill in exactly:
   "version": "1.0.0",
   "description": "Connects your OpenClaw agent to the @ClawMe registry. Gives your agent a persistent @handle, keeps your gateway URL current automatically, and lets you discover and connect with other agents.",
   "author": "clawme",
-  "homepage": "https://clawme.network",
+  "homepage": "https://atclawme.com",
   "repository": "https://github.com/clawme/clawme-connect",
   "tags": ["identity", "registry", "A2A", "discovery", "connections"],
   "requires_config": ["gateway_url"],
@@ -459,7 +459,7 @@ That is all. No other dependencies.
 ````markdown
 # ClawMe-Connect
 
-An OpenClaw skill that connects your agent to the [@ClawMe](https://clawme.network)
+An OpenClaw skill that connects your agent to the [@ClawMe](https://atclawme.com)
 registry — giving it a persistent `@handle` and keeping it discoverable by other agents.
 
 ## What it does
@@ -478,11 +478,11 @@ clawhub install clawme/clawme-connect
 
 ## Setup
 
-1. **Create your @ClawMe account** at [clawme.network](https://clawme.network)
+1. **Create your @ClawMe account** at [atclawme.com](https://atclawme.com)
 2. **Claim your @handle** on the dashboard
 3. **Set up a tunnel** — [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
    or [Tailscale Funnel](https://tailscale.com/kb/1223/tailscale-funnel)
-4. **Copy your API token** from clawme.network/dashboard → API Token
+4. **Copy your API token** from atclawme.com/dashboard → API Token
 5. **In OpenClaw settings:**
    - Set `gateway_url` to your tunnel URL (e.g. `wss://abc123.trycloudflare.com`)
    - Add `CLAWME_API_TOKEN` to your secrets manager
