@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+const allowVercelLive =
+  process.env.VERCEL_ENV === 'preview' || process.env.NODE_ENV !== 'production'
+
 const nextConfig = {
   reactStrictMode: true,
   // Strict mode: errors will fail the build in production
@@ -35,7 +38,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://nqximhfimxinetmzcetj.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' blob: data: https://nqximhfimxinetmzcetj.supabase.co https://*.googleusercontent.com https://avatars.githubusercontent.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://nqximhfimxinetmzcetj.supabase.co wss://nqximhfimxinetmzcetj.supabase.co; frame-ancestors 'none';",
+            value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://nqximhfimxinetmzcetj.supabase.co${allowVercelLive ? ' https://vercel.live' : ''}; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' blob: data: https://nqximhfimxinetmzcetj.supabase.co https://*.googleusercontent.com https://avatars.githubusercontent.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://nqximhfimxinetmzcetj.supabase.co wss://nqximhfimxinetmzcetj.supabase.co${allowVercelLive ? ' https://vercel.live' : ''}; frame-ancestors 'none';`,
           },
         ],
       },
