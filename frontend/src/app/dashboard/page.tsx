@@ -62,7 +62,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then((response) => {
+      const user = response.data.user
       if (user?.email) setUserEmail(user.email)
     })
     refresh()
@@ -104,7 +105,9 @@ export default function DashboardPage() {
                 </p>
               )}
             </div>
+            {/* @ts-ignore */}
             <Alert className="border-primary/20 bg-primary/5 text-xs text-muted-foreground">
+              {/* @ts-ignore */}
               <AlertDescription>
                 ClawMe is in early access and some capabilities are still rolling out. Full functionality is coming soon.
               </AlertDescription>

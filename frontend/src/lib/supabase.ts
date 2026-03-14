@@ -1,5 +1,6 @@
 'use client'
 import { createBrowserClient } from '@supabase/ssr'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
@@ -55,7 +56,7 @@ export function createClient() {
           return { data: { subscription: { unsubscribe: () => {} } } }
         },
       },
-    } as unknown as ReturnType<typeof createBrowserClient>
+    } as unknown as SupabaseClient
   }
-  return createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+  return createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY) as unknown as SupabaseClient
 }

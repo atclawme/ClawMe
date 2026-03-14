@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, type ChangeEvent } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { RadioGroup as _RadioGroup, RadioGroupItem as _RadioGroupItem } from '@/components/ui/radio-group'
 import { Label as _Label } from '@/components/ui/label'
@@ -113,7 +113,7 @@ export default function WaitlistSurvey({ email }: WaitlistSurveyProps) {
                   <Input
                     placeholder="Tell us more..."
                     value={otherDetails}
-                    onChange={(e) => setOtherDetails(e.target.value)}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) => setOtherDetails(e.target.value)}
                     className="bg-[#1C1C28] border-[#3F3F50] text-[#F0F0F5] focus:border-[#6C47FF] h-10"
                   />
                 </motion.div>
