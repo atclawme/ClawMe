@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Toaster } from '@/components/ui/sonner'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
 const inter = Inter({
@@ -42,6 +43,7 @@ export default function RootLayout({
         className="bg-[#0A0A0F] text-[#F0F0F5] antialiased"
       >
         {children}
+        <Analytics />
         <Toaster />
       </body>
     </html>
