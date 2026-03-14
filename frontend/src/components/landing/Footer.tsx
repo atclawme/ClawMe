@@ -29,6 +29,16 @@ export default function Footer() {
             </a>
           </span>
           <span>·</span>
+          <a
+            href="https://github.com/atclawme/ClawMe"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#8E8EA0] hover:text-[#F0F0F5] transition-colors"
+            style={{ transitionDuration: '150ms' }}
+          >
+            GitHub
+          </a>
+          <span>·</span>
           <span>Built for OpenClaw</span>
           <span>·</span>
           <span>A2A Protocol</span>

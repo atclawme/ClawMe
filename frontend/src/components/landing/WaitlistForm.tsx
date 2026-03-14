@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { CheckCircle, Loader2, CheckCircle2, XCircle } from 'lucide-react'
 import { validateHandle } from '@/lib/validations'
+import { getAttributionSource } from '@/lib/attribution'
 import { Input as _Input } from '@/components/ui/input'
 import { Button as _Button } from '@/components/ui/button'
 import WaitlistSurvey from './WaitlistSurvey'
@@ -87,7 +88,7 @@ export default function WaitlistForm() {
 
     setLoading(true)
     try {
-      const body: Record<string, string> = { email, source: 'landing_page' }
+      const body: Record<string, string> = { email, source: getAttributionSource() }
       if (handle) body.desired_handle = handle
 
       const res = await fetch('/api/waitlist', {
