@@ -171,7 +171,7 @@ export default function ClaimClient() {
           </p>
           {isWelcome ? (
             <p className="mt-3 text-[13px] text-[#22C55E]">
-              Welcome — we saved your reserved handle from the waitlist.
+              Welcome, we saved your reserved handle from the waitlist.
             </p>
           ) : null}
         </div>

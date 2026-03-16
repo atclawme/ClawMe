@@ -82,16 +82,16 @@ export default function WaitlistSurvey({ email }: WaitlistSurveyProps) {
             className="space-y-6"
           >
             <div className="border-t border-[#3F3F50] pt-10 mt-10">
-              <h4 className="text-[18px] font-semibold text-[#F0F0F5] mb-2">
+              <h4 className="text-[18px] font-bold text-[#F0F0F5] mb-2">
                 How did you find out about us?
               </h4>
               <p className="text-[14px] text-[#8E8EA0] mb-8">
-                Optional — helps us understand where our first users are coming from.
+                Optional, helps us understand where our first users are coming from.
               </p>
 
               <RadioGroup
                 value={source}
-                onValueChange={setSource}
+                onValueChange={(value: string) => setSource(value)}
                 className="grid grid-cols-2 gap-4 max-w-md mx-auto text-left"
               >
                 {SOURCES.map((s) => (

@@ -12,18 +12,18 @@ const CardContent = _CardContent as React.FC<React.HTMLAttributes<HTMLDivElement
 const steps = [
   {
     number: '01',
-    title: 'Reserve your handle',
-    body: 'Choose your @name. Claim it before someone else does. Handles are unique, permanent, and yours.',
+    title: 'Reserve your @handle',
+    body: 'Claim a unique, human-readable @handle for your self-hosted AI agent.',
   },
   {
     number: '02',
-    title: 'Install the @ClawMe skill',
-    body: 'The OpenClaw skill connects your local agent to the registry. It keeps your location current automatically, with no manual updates.',
+    title: 'Connect your agent',
+    body: 'Install the @ClawMe OpenClaw skill (coming soon). It keeps your tunnel URL and heartbeat in sync with the registry, with no manual updates.',
   },
   {
     number: '03',
-    title: 'Connect with other agents',
-    body: 'Discover agents by @handle. Send connection requests. Collaborate across ecosystems: OpenClaw, Gemini, Copilot, and beyond.',
+    title: 'Discover & connect',
+    body: 'Other agents resolve @you via the A2A card. Approved connections get your live tunnel URL. Everyone else sees a public profile or a request link. Uses Google’s A2A format for cross-ecosystem discovery.',
   },
 ]
 
@@ -49,14 +49,14 @@ export default function HowItWorks() {
             className="text-[18px] text-[#8E8EA0] leading-[1.7] mx-auto mt-6"
             style={{ maxWidth: '640px' }}
           >
-            The agentic web is a wild west.{' '}
+            The agentic web is a wild west.{" "}
             <span
               className="text-[#6C47FF]"
               style={{ fontFamily: 'var(--font-jetbrains-mono), JetBrains Mono, monospace' }}
             >
               @ClawMe
-            </span>{' '}
-            is the address book, the handshake, and the bouncer for your personal AI agent
+            </span>{" "}
+            is the address book, handshake, and bouncer for your self-hosted AI agent.
           </p>
         </div>
 
@@ -82,23 +82,7 @@ export default function HowItWorks() {
 
                 <CardHeader>
                   <CardTitle className="text-[18px] font-bold text-[#F0F0F5] relative z-10">
-                    {step.number === '02' ? (
-                      <>
-                        Install the{' '}
-                        <span
-                          className="text-[#6C47FF]"
-                          style={{
-                            fontFamily:
-                              'var(--font-jetbrains-mono), JetBrains Mono, monospace',
-                          }}
-                        >
-                          @ClawMe
-                        </span>{' '}
-                        skill
-                      </>
-                    ) : (
-                      step.title
-                    )}
+                    {step.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>

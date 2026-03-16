@@ -316,7 +316,7 @@ export default function WaitlistForm() {
                         className="w-1.5 h-1.5 rounded-full inline-block flex-shrink-0"
                         style={{ backgroundColor: '#F59E0B' }}
                       />
-                      Too many checks — wait a moment
+                      Too many checks, wait a moment
                     </p>
                   )}
                   {availability === 'invalid' && handleError && (
