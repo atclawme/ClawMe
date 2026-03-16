@@ -6,11 +6,11 @@ import { claimHandleSchema, updateHandleSchema } from '@/lib/validations'
 import { apiError, apiValidationError } from '@/lib/api-response'
 
 /**
- * POST /api/handle — Claim a handle
+ * POST /api/handle - Claim a handle
  * 
  * Validates:
  * 1. Handle format is valid
- * 2. Handle is not system-reserved
+ * 2. Handle is available
  * 3. User doesn't already have a handle
  * 4. Handle is not already claimed (active)
  * 5. Handle is not reserved on waitlist by a DIFFERENT email
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * PUT /api/handle — Update handle settings
+ * PUT /api/handle - Update handle settings
  */
 export async function PUT(request: NextRequest) {
   const auth = await requireAuth(request)

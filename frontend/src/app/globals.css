@@ -45,7 +45,7 @@ body {
   animation: shimmer 1.5s infinite;
 }
 
-/* Shadcn CSS variables — dark by default */
+/* Shadcn CSS variables - dark by default */
 @layer base {
   :root {
     --background: 240 10% 4%;
