@@ -11,6 +11,7 @@ const REF_MAP: Record<string, string> = {
   rsh: 'reddit_selfhosted',
   gh: 'github',
   dc: 'openclaw_discord',
+  dev: 'dev_to'
 }
 
 function normalizeSource(input: string): string {
